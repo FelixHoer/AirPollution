@@ -16,6 +16,7 @@
 #include "EgoMovement.h"
 #include "InputManager.h"
 #include "KeyboardInputHandler.h"
+#include "DataReader.h"
 
 
 void setupScene()
@@ -55,8 +56,12 @@ void setupScene()
 
 void setupApplication()
 {
+  Data data = DataReader::read("..\\Data\\data.csv");
+
   setupScene();
+
   Window::fps_counter = new FPSCounter();
+
   InputManager::attatchInputHandler(new KeyboardInputHandler());
 }
 
