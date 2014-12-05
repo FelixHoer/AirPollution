@@ -37,7 +37,6 @@ void EgoMovement::setup()
 
 void EgoMovement::specialKeyPressed(int key, int x, int y)
 {
-  std::cout << "pressed: " << key << std::endl;
   switch (key)
   {
   case GLUT_KEY_UP:
@@ -57,7 +56,6 @@ void EgoMovement::specialKeyPressed(int key, int x, int y)
 
 void EgoMovement::specialKeyReleased(int key, int x, int y)
 {
-  std::cout << "released: " << key << std::endl;
   switch (key)
   {
   case GLUT_KEY_UP:
@@ -91,9 +89,6 @@ void EgoMovement::update(const int delta_time)
   glm::mat4 delta_matrix = glm::translate(glm::mat4(), position)
                          * glm::rotate(glm::mat4(), rotation.y, glm::vec3(0, 1, 0))
                          * glm::rotate(glm::mat4(), rotation.x, glm::vec3(1, 0, 0));
-
-  //std::cout << "position: " << glm::to_string(position) << std::endl;
-  //std::cout << "rotation: " << glm::to_string(rotation) << std::endl;
 
   transform->setMatrix(delta_matrix);
 }
