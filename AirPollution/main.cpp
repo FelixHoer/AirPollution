@@ -63,7 +63,7 @@ void setupScene()
 
 void setupApplication()
 {
-  // Data data = DataReader::read("..\\Data\\data.csv");
+  Data data = DataReader::read("citisensePhone16Merged_July_8_25.csv");
 
   setupScene();
 
