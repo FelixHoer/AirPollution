@@ -23,10 +23,9 @@ SmokeSource::SmokeSource(char* n) : Geode(n)
 void SmokeSource::setup()
 {
   initVertexData(vertex_data);
-  initColorData(color_data);
-  initNormalData(normal_data);
+  initPositionData(position_data);
 
-  createArrayBuffer(vertex_data, color_data, normal_data);
+  createArrayBuffer(vertex_data, position_data);
 
   initializeBoundingSphere();
 }
@@ -51,26 +50,19 @@ void SmokeSource::initVertexData(GLfloat* vertex_data)
   }
 }
 
-void SmokeSource::initColorData(GLubyte* color_data)
+void SmokeSource::initPositionData(GLfloat* position_data)
 {
-  for (unsigned int i = 0; i < 4 * FACES; i++) {
-    color_data[i * 4 + 0] = 200;
-    color_data[i * 4 + 1] = 200;
-    color_data[i * 4 + 2] = 200;
-    color_data[i * 4 + 3] = 255;
+  for (int i = 0; i < 3 * PARTICLES; i++) {
+    float r1 = float(std::rand()) / RAND_MAX;
+    float r2 = float(std::rand()) / RAND_MAX;
+    float r3 = float(std::rand()) / RAND_MAX;
+    position_data[i * 3 + 0] = r1 * 2.0f - 1.0f;
+    position_data[i * 3 + 1] = r2 * 2.0f - 1.0f;
+    position_data[i * 3 + 2] = r3 * 2.0f - 1.0f;
   }
 }
 
-void SmokeSource::initNormalData(GLfloat* normal_data)
-{
-  for (int i = 0; i < 4 * FACES; i++) {
-    normal_data[i * 3 + 0] = 0.0f;
-    normal_data[i * 3 + 1] = 0.0f;
-    normal_data[i * 3 + 2] = 1.0f;
-  }
-}
-
-void SmokeSource::createArrayBuffer(GLfloat* vertex_data, GLubyte* color_data, GLfloat* normal_data)
+void SmokeSource::createArrayBuffer(GLfloat* vertex_data, GLfloat* position_data)
 {
   GLuint error;
 
@@ -85,8 +77,7 @@ void SmokeSource::createArrayBuffer(GLfloat* vertex_data, GLubyte* color_data, G
     std::cerr << "init buffer error, bind vertex array: " << error << std::endl;
 
   createVertexAttribute(vertex_data);
-  createColorAttribute(color_data);
-  createNormalAttribute(normal_data);
+  createPositionAttribute(position_data);
 }
 
 void SmokeSource::configureArrayBuffer()
@@ -99,8 +90,7 @@ void SmokeSource::configureArrayBuffer()
     std::cerr << "init buffer error, bind vertex array: " << error << std::endl;
 
   configureVertexAttribute();
-  configureColorAttribute();
-  configureNormalAttribute();
+  configurePositionAttribute();
 }
 
 void SmokeSource::createVertexAttribute(GLfloat* vertex_data)
@@ -110,7 +100,7 @@ void SmokeSource::createVertexAttribute(GLfloat* vertex_data)
   // create buffer for attribute 1: vertex
   glGenBuffers(1, &vertex_buffer);
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 3 * sizeof(GLfloat), vertex_data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 3 * sizeof(GLfloat), vertex_data, GL_STREAM_DRAW);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, gen vertex buffer: " << error << std::endl;
 }
@@ -127,57 +117,42 @@ void SmokeSource::configureVertexAttribute()
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, attrib pointer: " << error << std::endl;
-}
 
-void SmokeSource::createColorAttribute(GLubyte* color_data)
-{
-  GLuint error;
-
-  // create buffer for attribute 2: color
-  glGenBuffers(1, &color_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 4 * sizeof(GLubyte), color_data, GL_STATIC_DRAW);
+  // set attribute divisor
+  glVertexAttribDivisor(0, 0);
   if ((error = glGetError()) != GL_NO_ERROR)
-    std::cerr << "init buffer error, gen color buffer: " << error << std::endl;
+    std::cerr << "init buffer error, attribute divisor: " << error << std::endl;
 }
 
-void SmokeSource::configureColorAttribute()
+void SmokeSource::createPositionAttribute(GLfloat* position_data)
 {
   GLuint error;
 
-  glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-
-  // enable color data as attribute 2
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)0);
+  // create buffer for attribute 2: position
+  glGenBuffers(1, &position_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
+  glBufferData(GL_ARRAY_BUFFER, PARTICLES * 3 * sizeof(GLfloat), position_data, GL_STREAM_DRAW);
   if ((error = glGetError()) != GL_NO_ERROR)
-    std::cerr << "init buffer error, attrib pointer: " << error << std::endl;
+    std::cerr << "init buffer error, gen position buffer: " << error << std::endl;
 }
 
-void SmokeSource::createNormalAttribute(GLfloat* normal_data)
+void SmokeSource::configurePositionAttribute()
 {
   GLuint error;
 
-  // create buffer for attribute 3: normals
-  glGenBuffers(1, &normal_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, normal_buffer);
-  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 3 * sizeof(GLfloat), normal_data, GL_STATIC_DRAW);
-  if ((error = glGetError()) != GL_NO_ERROR)
-    std::cerr << "init buffer error, gen normal buffer: " << error << std::endl;
-}
+  glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
 
-void SmokeSource::configureNormalAttribute()
-{
-  GLuint error;
-
-  glBindBuffer(GL_ARRAY_BUFFER, normal_buffer);
-
-  // enable normals data as attribute 3
+  // enable position data as attribute 2
   // (index, size, type, normalized, stride, pointer)
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, 0, (void*)0);
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, attrib pointer: " << error << std::endl;
+
+  // set attribute divisor
+  glVertexAttribDivisor(1, 1);
+  if ((error = glGetError()) != GL_NO_ERROR)
+    std::cerr << "init buffer error, attribute divisor: " << error << std::endl;
 }
 
 void SmokeSource::render(const glm::mat4& matrix, const RenderType type)
@@ -205,9 +180,11 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
   GLint mvp_location = glGetUniformLocation(ss->getProgram(), "mvp_matrix");
   glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp_matrix));
 
-  glDrawArrays(GL_QUADS, 0, 4 * FACES);
+  //glDrawArrays(GL_QUADS, 0, 4 * FACES);
+  glDrawArraysInstanced(GL_QUADS, 0, 4 * FACES, PARTICLES);
 
   glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
 }
 
 void SmokeSource::initializeBoundingSphere()
