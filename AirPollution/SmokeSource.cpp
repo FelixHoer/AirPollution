@@ -34,41 +34,26 @@ void SmokeSource::setup()
 void SmokeSource::initVertexData(GLfloat* vertex_data)
 {
   GLfloat points[] = {
-    -1.0f, -1.0f, 1.0f,
-    1.0f, -1.0f, 1.0f,
-    -1.0f, -1.0f, -1.0f,
-    1.0f, -1.0f, -1.0f,
-    -1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f, -1.0f,
-    1.0f, 1.0f, -1.0f
+    -1.0f, -1.0f, 0.0f,
+    1.0f, -1.0f, 0.0f,
+    -1.0f, 1.0f, 0.0f,
+    1.0f,  1.0f, 0.0f
   };
 
   int faces[] = {
-    0, 1, 5, // front
-    0, 5, 4, // front
-    3, 2, 6, // back
-    3, 6, 7, // back
-    1, 3, 7, // right
-    1, 7, 5, // right
-    2, 0, 4, // left
-    2, 4, 6, // left
-    2, 1, 0, // bottom
-    2, 3, 1, // bottom
-    4, 5, 7, // top
-    4, 7, 6  // top
+    0, 1, 3, 2
   };
 
-  for (int i = 0; i < 3 * FACES; i++) {
-    vertex_data[i * 3 + 1] = points[faces[i] * 3 + 0];
-    vertex_data[i * 3 + 0] = points[faces[i] * 3 + 1];
-    vertex_data[i * 3 + 2] = points[faces[i] * 3 + 2];
+  for (int i = 0; i < 4 * FACES; i++) {
+    vertex_data[i * 3 + 1] = 0.5f * points[faces[i] * 3 + 0];
+    vertex_data[i * 3 + 0] = 0.5f * points[faces[i] * 3 + 1];
+    vertex_data[i * 3 + 2] = 0.5f * points[faces[i] * 3 + 2];
   }
 }
 
 void SmokeSource::initColorData(GLubyte* color_data)
 {
-  for (unsigned int i = 0; i < 3 * FACES; i++) {
+  for (unsigned int i = 0; i < 4 * FACES; i++) {
     color_data[i * 4 + 0] = 200;
     color_data[i * 4 + 1] = 200;
     color_data[i * 4 + 2] = 200;
@@ -78,30 +63,10 @@ void SmokeSource::initColorData(GLubyte* color_data)
 
 void SmokeSource::initNormalData(GLfloat* normal_data)
 {
-  GLfloat normals[] = {
-    1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-
-    0.0f, 1.0f, 0.0f,
-    0.0f, -1.0f, 0.0f,
-
-    0.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, -1.0f
-  };
-
-  int face_normals[] = {
-    4, 4,
-    5, 5,
-    0, 0,
-    1, 1,
-    3, 3,
-    2, 2
-  };
-
-  for (int i = 0; i < 3 * FACES; i++) {
-    normal_data[i * 3 + 0] = -1.0f * normals[face_normals[i / 3] * 3 + 0];
-    normal_data[i * 3 + 1] = -1.0f * normals[face_normals[i / 3] * 3 + 1];
-    normal_data[i * 3 + 2] = -1.0f * normals[face_normals[i / 3] * 3 + 2];
+  for (int i = 0; i < 4 * FACES; i++) {
+    normal_data[i * 3 + 0] = 0.0f;
+    normal_data[i * 3 + 1] = 0.0f;
+    normal_data[i * 3 + 2] = 1.0f;
   }
 }
 
@@ -145,7 +110,7 @@ void SmokeSource::createVertexAttribute(GLfloat* vertex_data)
   // create buffer for attribute 1: vertex
   glGenBuffers(1, &vertex_buffer);
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-  glBufferData(GL_ARRAY_BUFFER, 3 * FACES * 3 * sizeof(GLfloat), vertex_data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 3 * sizeof(GLfloat), vertex_data, GL_STATIC_DRAW);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, gen vertex buffer: " << error << std::endl;
 }
@@ -171,7 +136,7 @@ void SmokeSource::createColorAttribute(GLubyte* color_data)
   // create buffer for attribute 2: color
   glGenBuffers(1, &color_buffer);
   glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-  glBufferData(GL_ARRAY_BUFFER, 3 * FACES * 4 * sizeof(GLubyte), color_data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 4 * sizeof(GLubyte), color_data, GL_STATIC_DRAW);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, gen color buffer: " << error << std::endl;
 }
@@ -196,7 +161,7 @@ void SmokeSource::createNormalAttribute(GLfloat* normal_data)
   // create buffer for attribute 3: normals
   glGenBuffers(1, &normal_buffer);
   glBindBuffer(GL_ARRAY_BUFFER, normal_buffer);
-  glBufferData(GL_ARRAY_BUFFER, 3 * FACES * 3 * sizeof(GLfloat), normal_data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 3 * sizeof(GLfloat), normal_data, GL_STATIC_DRAW);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, gen normal buffer: " << error << std::endl;
 }
@@ -240,7 +205,7 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
   GLint mvp_location = glGetUniformLocation(ss->getProgram(), "mvp_matrix");
   glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp_matrix));
 
-  glDrawArrays(GL_TRIANGLES, 0, 3 * FACES);
+  glDrawArrays(GL_QUADS, 0, 4 * FACES);
 
   glDisableVertexAttribArray(0);
 }
@@ -248,7 +213,7 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
 void SmokeSource::initializeBoundingSphere()
 {
   glm::vec3 center(0, 0, 0);
-  float radius = glm::length(center - glm::vec3(1,1,1)); // TODO
+  float radius = glm::length(center - glm::vec3(0.5f, 0.5f, 0.5f));
   bounding_sphere = BoundingSphere(center, radius);
 }
 

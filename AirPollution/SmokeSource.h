@@ -8,16 +8,16 @@ class SmokeSource : public Geode
 protected:
   BoundingSphere bounding_sphere;
 
-  static const GLuint FACES = 6 * 2;
+  static const GLuint FACES = 1;
 
   GLuint vertex_array;
   GLuint vertex_buffer;
   GLuint color_buffer;
   GLuint normal_buffer;
 
-  GLfloat vertex_data[3 * 3 * FACES];
-  GLubyte color_data[3 * 4 * FACES];
-  GLfloat normal_data[3 * 3 * FACES];
+  GLfloat vertex_data[4 * 3 * FACES];
+  GLubyte color_data[4 * 4 * FACES];
+  GLfloat normal_data[4 * 3 * FACES];
 
   void initVertexData(GLfloat* vertex_data);
   void initColorData(GLubyte* color_data);
