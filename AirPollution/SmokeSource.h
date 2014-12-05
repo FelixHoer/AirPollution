@@ -9,7 +9,7 @@ protected:
   BoundingSphere bounding_sphere;
 
   static const GLuint FACES = 1;
-  static const GLuint PARTICLES = 10;
+  static const GLuint PARTICLES = 1000;
 
   GLuint vertex_array;
   GLuint vertex_buffer;
@@ -17,9 +17,11 @@ protected:
 
   GLfloat vertex_data[4 * 3 * FACES];
   GLfloat position_data[3 * PARTICLES];
+  GLfloat velocity_data[3 * PARTICLES];
 
   void initVertexData(GLfloat* vertex_data);
-  void initPositionData(GLfloat* position_data);
+
+  void spawn(GLfloat* position, GLfloat* velocity);
 
   void createArrayBuffer(GLfloat* vertex_data, 
                          GLfloat* position_data);
@@ -29,6 +31,8 @@ protected:
   void configureArrayBuffer();
   void configureVertexAttribute();
   void configurePositionAttribute();
+
+  void animate();
 
   virtual void renderSmoke(const glm::mat4& matrix);
 

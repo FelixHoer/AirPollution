@@ -17,6 +17,7 @@ public:
   static bool enable_culling;
 
   static int time_since_start;
+  static int delta_time;
 
   static int width, height; 	            // window size
 
@@ -24,7 +25,7 @@ public:
   static void reshapeCallback(int, int);
   static void displayCallback(void);
 
-  static int getDeltaTime();
+  static int calculateDeltaTime();
   static void renderText(const char*);
 };
 

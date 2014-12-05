@@ -19,8 +19,9 @@ bool Window::show_bounding_sphere = true;
 bool Window::enable_culling = true;
 
 int Window::time_since_start = 0;
+int Window::delta_time = 0;
 
-int Window::getDeltaTime()
+int Window::calculateDeltaTime()
 {
   int new_time_since_start = glutGet(GLUT_ELAPSED_TIME);
   int delta_time = new_time_since_start - time_since_start;
@@ -32,7 +33,7 @@ int Window::getDeltaTime()
 // Callback method called when system is idle.
 void Window::idleCallback(void)
 {
-  int delta_time = getDeltaTime();
+  delta_time = calculateDeltaTime();
   root->update(delta_time);
 
   displayCallback();    // call display routine to redraw cube
