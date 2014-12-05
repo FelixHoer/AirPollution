@@ -6,12 +6,14 @@
 class SmokeShader : public MatrixTransform
 {
 protected:
-  static const GLchar* VERTEX_SHADER_CODE;
-  static const GLchar* FRAGMENT_SHADER_CODE;
+  static const char* VERTEX_SHADER_PATH;
+  static const char* FRAGMENT_SHADER_PATH;
 
   GLuint program;
   GLuint vertex_shader;
   GLuint fragment_shader;
+
+  std::string readFile(std::string path);
 
   void createProgramWithShaders();
   void configureProgramWithShaders();

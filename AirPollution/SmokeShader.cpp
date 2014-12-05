@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <fstream>
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -9,26 +10,8 @@
 #include "SmokeShader.h"
 
 
-const GLchar* SmokeShader::VERTEX_SHADER_CODE =
-"#version 330 \n\
-uniform mat4 mvp_matrix; \n\
-layout(location = 0) in vec3 vertex_position; \n\
-layout(location = 1) in vec4 vertex_color; \n\
-layout(location = 2) in vec3 vertex_normal; \n\
-layout(location = 0) out vec4 color; \n\
-void main(void) \n\
-{ \n\
-  gl_Position = mvp_matrix * vec4(vertex_position.x, vertex_position.y, vertex_position.z, 1.0f); \n\
-  color = vertex_color; \n\
-} \n";
-
-const GLchar* SmokeShader::FRAGMENT_SHADER_CODE =
-"#version 330 \n\
-layout(location = 0) in vec4 color; \n\
-void main(void) \n\
-{ \n\
-  gl_FragColor = color; \n\
-} \n";
+const char* SmokeShader::VERTEX_SHADER_PATH = "..\\Shader\\SmokeVertexShader.glsl";
+const char* SmokeShader::FRAGMENT_SHADER_PATH = "..\\Shader\\SmokeFragmentShader.glsl";
 
 
 SmokeShader::SmokeShader() : SmokeShader("SmokeShader")
@@ -43,12 +26,35 @@ void SmokeShader::setup()
   MatrixTransform::setup();
 }
 
+std::string SmokeShader::readFile(std::string path)
+{
+  std::string file;
+
+  std::ifstream myfile(path);
+  if (!myfile.is_open())
+  {
+    std::cout << "could not open file: " << path << std::endl;
+    return "";
+  }
+
+  std::string line;
+  while (std::getline(myfile, line))
+  {
+    file += line;
+    file += "\n";
+  }
+  myfile.close();
+
+  return file;
+}
+
 void SmokeShader::createProgramWithShaders()
 {
   GLuint error;
   GLchar* error_log = new GLchar[1000];
   GLsizei error_log_size = 0;
   GLint compile_status;
+  const GLchar* code;
 
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init program error: " << error << std::endl;
@@ -59,7 +65,9 @@ void SmokeShader::createProgramWithShaders()
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init program error, create shader: " << error << std::endl;
 
-  glShaderSource(vertex_shader, 1, (const GLchar **)&VERTEX_SHADER_CODE, NULL);
+  std::string vertex_shader_code = readFile(VERTEX_SHADER_PATH);
+  code = vertex_shader_code.c_str();
+  glShaderSource(vertex_shader, 1, &code, NULL);
   glCompileShader(vertex_shader);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init program error, vertex shader: " << error << std::endl;
@@ -76,7 +84,10 @@ void SmokeShader::createProgramWithShaders()
   fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init program error, create shader: " << error << std::endl;
-  glShaderSource(fragment_shader, 1, (const GLchar **)&FRAGMENT_SHADER_CODE, NULL);
+
+  std::string fragment_shader_code = readFile(FRAGMENT_SHADER_PATH);
+  code = fragment_shader_code.c_str();
+  glShaderSource(fragment_shader, 1, &code, NULL);
   glCompileShader(fragment_shader);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init program error, fragment shader: " << error << std::endl;

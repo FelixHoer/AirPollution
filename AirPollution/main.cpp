@@ -45,25 +45,25 @@ void setupScene()
   camera->setMatrix(matrix);
   camera->addChild(movement_matrix);
 
-  // object
+  // cube
 
-  /*
   MatrixTransform* cube = new MatrixTransform();
-  matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
+  matrix = glm::translate(glm::mat4(), glm::vec3(20, 0, 0))
+         * glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
   cube->setMatrix(matrix);
   cube->addChild(new Cube());
-  */
+
+  // object smoke
 
   SmokeSource* ssource = new SmokeSource();
 
   SmokeShader* sshader = new SmokeShader();
   sshader->addChild(ssource);
 
-  MatrixTransform* cube = new MatrixTransform();
+  MatrixTransform* smoke = new MatrixTransform();
   matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
-  cube->setMatrix(matrix);
-  cube->addChild(sshader);
-
+  smoke->setMatrix(matrix);
+  smoke->addChild(sshader);
 
   // scene
 
@@ -71,6 +71,7 @@ void setupScene()
   scene->addChild(directional_light);
   scene->addChild(camera);
   scene->addChild(cube);
+  scene->addChild(smoke);
   scene->setup();
 
   Window::root = scene;
