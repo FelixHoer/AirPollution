@@ -11,6 +11,7 @@
 #include "Window.h"
 #include "MatrixTransform.h"
 #include "DirectionalLight.h"
+#include "Terrain.h"
 #include "Camera.h"
 #include "Cube.h"
 #include "EgoMovement.h"
@@ -44,8 +45,14 @@ void setupScene()
   cube->setMatrix(matrix);
   cube->addChild(new Cube());
 
+  MatrixTransform* terrain = new MatrixTransform();
+  matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
+  terrain->setMatrix(matrix);
+  terrain->addChild(new Terrain());
+
   MatrixTransform* scene = new MatrixTransform();
   scene->addChild(directional_light);
+  scene->addChild(terrain);
   scene->addChild(camera);
   scene->addChild(cube);
   scene->setup();
@@ -56,7 +63,7 @@ void setupScene()
 
 void setupApplication()
 {
-  Data data = DataReader::read("..\\Data\\data.csv");
+  // Data data = DataReader::read("..\\Data\\data.csv");
 
   setupScene();
 
