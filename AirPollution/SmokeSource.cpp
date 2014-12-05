@@ -173,6 +173,9 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
 
   configureArrayBuffer();
 
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   SmokeShader* ss = (SmokeShader*)parent;
   glm::mat4 p_matrix;
   glGetFloatv(GL_PROJECTION_MATRIX, glm::value_ptr(p_matrix));
@@ -182,6 +185,8 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
 
   //glDrawArrays(GL_QUADS, 0, 4 * FACES);
   glDrawArraysInstanced(GL_QUADS, 0, 4 * FACES, PARTICLES);
+
+  glDisable(GL_BLEND);
 
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
