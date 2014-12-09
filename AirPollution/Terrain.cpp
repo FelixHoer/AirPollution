@@ -42,7 +42,7 @@
 #include "Terrain.h"
 #include "MapReader.h"
 
-std::string textureFilename = "mapSquare.ppm";
+std::string textureFilename = "..\\Texture\\mapSquare.ppm";
 
 
 
