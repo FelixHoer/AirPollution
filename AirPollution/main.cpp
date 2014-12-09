@@ -11,6 +11,7 @@
 #include "Window.h"
 #include "MatrixTransform.h"
 #include "DirectionalLight.h"
+#include "Terrain.h"
 #include "Camera.h"
 #include "Cube.h"
 #include "EgoMovement.h"
@@ -65,10 +66,18 @@ void setupScene()
   smoke->setMatrix(matrix);
   smoke->addChild(sshader);
 
+  // terrain
+
+  MatrixTransform* terrain = new MatrixTransform();
+  matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
+  terrain->setMatrix(matrix);
+  terrain->addChild(new Terrain());
+
   // scene
 
   MatrixTransform* scene = new MatrixTransform();
   scene->addChild(directional_light);
+  scene->addChild(terrain);
   scene->addChild(camera);
   scene->addChild(cube);
   scene->addChild(smoke);
@@ -80,7 +89,7 @@ void setupScene()
 
 void setupApplication()
 {
-  Data data = DataReader::read("..\\Data\\data.csv");
+  Data data = DataReader::read("citisensePhone16Merged_July_8_25.csv");
 
   setupScene();
 
@@ -116,7 +125,7 @@ int main(int argc, char *argv[])
     std::cout << "Error: GL v3.3" << std::endl;
     return 3;
   }
-  
+
   glEnable(GL_DEPTH_TEST);            	      // enable depth buffering
   glClear(GL_DEPTH_BUFFER_BIT);       	      // clear depth buffer
   glClearColor(0.0, 0.0, 0.0, 0.0);   	      // set clear color to black
