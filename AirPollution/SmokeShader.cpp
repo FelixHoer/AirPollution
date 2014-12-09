@@ -6,12 +6,15 @@
 #include <GL/glut.h>
 #include <glm/glm.hpp>
 #include "ObjectCounter.h"
+#include "TextureReader.h"
 
 #include "SmokeShader.h"
 
 
 const char* SmokeShader::VERTEX_SHADER_PATH = "..\\Shader\\SmokeVertexShader.glsl";
 const char* SmokeShader::FRAGMENT_SHADER_PATH = "..\\Shader\\SmokeFragmentShader.glsl";
+
+const char* SmokeShader::TEXTURE_PATH = "..\\Texture\\smokeparticle.ppm";
 
 
 SmokeShader::SmokeShader() : SmokeShader("SmokeShader")
@@ -23,6 +26,9 @@ SmokeShader::SmokeShader(char* n) : MatrixTransform(n)
 void SmokeShader::setup()
 {
   createProgramWithShaders();
+  configureProgramWithShaders();
+  createTexture();
+  configureTexture();
   MatrixTransform::setup();
 }
 
@@ -132,11 +138,36 @@ void SmokeShader::configureProgramWithShaders()
   }
 }
 
+void SmokeShader::createTexture()
+{
+  texture = TextureReader::loadTexture(TEXTURE_PATH);
+}
+
+void SmokeShader::configureTexture()
+{
+  TextureReader::configureTexture(GL_TEXTURE1, texture);
+
+  GLuint error;
+  GLchar* error_log = new GLchar[1000];
+  GLsizei error_log_size = 0;
+
+  GLint texture_image_location = glGetUniformLocation(program, "texture_image");
+  glUniform1i(texture_image_location, 1);
+
+  if ((error = glGetError()) != GL_NO_ERROR)
+  {
+    std::cerr << "configure texture: " << error << std::endl;
+    glGetProgramInfoLog(program, 1000, &error_log_size, error_log);
+    std::cerr << "error log: " << error_log << std::endl;
+  }
+}
+
 void SmokeShader::render(const glm::mat4& matrix, const RenderType type)
 {
   if (type == RenderType::OBJECT)
   {
     configureProgramWithShaders();
+    configureTexture();
     setLightSource();
   }
 

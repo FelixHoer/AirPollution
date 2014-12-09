@@ -23,10 +23,10 @@ SmokeSource::SmokeSource(char* n) : Geode(n)
 void SmokeSource::setup()
 {
   initVertexData(vertex_data);
+  initTextureData(texture_data);
+
   for (int i = 0; i < PARTICLES; i++)
-  {
     spawn(&(position_data[i * 3]), &(velocity_data[i * 3]));
-  }
 
   createArrayBuffer(vertex_data, position_data);
 
@@ -39,7 +39,7 @@ void SmokeSource::initVertexData(GLfloat* vertex_data)
     -1.0f, -1.0f, 0.0f,
     1.0f, -1.0f, 0.0f,
     -1.0f, 1.0f, 0.0f,
-    1.0f,  1.0f, 0.0f
+    1.0f, 1.0f, 0.0f
   };
 
   int faces[] = {
@@ -47,9 +47,24 @@ void SmokeSource::initVertexData(GLfloat* vertex_data)
   };
 
   for (int i = 0; i < 4 * FACES; i++) {
-    vertex_data[i * 3 + 1] = 0.5f * points[faces[i] * 3 + 0];
-    vertex_data[i * 3 + 0] = 0.5f * points[faces[i] * 3 + 1];
-    vertex_data[i * 3 + 2] = 0.5f * points[faces[i] * 3 + 2];
+    vertex_data[i * 3 + 0] = 0.5f * points[faces[i] * 3 + 0];
+    vertex_data[i * 3 + 1] = 0.0f;
+    vertex_data[i * 3 + 2] = 0.5f * points[faces[i] * 3 + 1];
+  }
+}
+
+void SmokeSource::initTextureData(GLfloat* texture_data)
+{
+  GLfloat texture[] = {
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f
+  };
+
+  for (int i = 0; i < 4 * FACES; i++) {
+    texture_data[i * 2 + 0] = texture[i * 2 + 0];
+    texture_data[i * 2 + 1] = texture[i * 2 + 1];
   }
 }
 
@@ -82,6 +97,7 @@ void SmokeSource::createArrayBuffer(GLfloat* vertex_data, GLfloat* position_data
     std::cerr << "init buffer error, bind vertex array: " << error << std::endl;
 
   createVertexAttribute(vertex_data);
+  createTextureAttribute(texture_data);
   createPositionAttribute(position_data);
 }
 
@@ -95,6 +111,7 @@ void SmokeSource::configureArrayBuffer()
     std::cerr << "init buffer error, bind vertex array: " << error << std::endl;
 
   configureVertexAttribute();
+  configureTextureAttribute();
   configurePositionAttribute();
 }
 
@@ -105,7 +122,7 @@ void SmokeSource::createVertexAttribute(GLfloat* vertex_data)
   // create buffer for attribute 1: vertex
   glGenBuffers(1, &vertex_buffer);
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 3 * sizeof(GLfloat), vertex_data, GL_STREAM_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 3 * sizeof(GLfloat), vertex_data, GL_STATIC_DRAW);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, gen vertex buffer: " << error << std::endl;
 }
@@ -129,11 +146,42 @@ void SmokeSource::configureVertexAttribute()
     std::cerr << "init buffer error, attribute divisor: " << error << std::endl;
 }
 
+void SmokeSource::createTextureAttribute(GLfloat* texture_data)
+{
+  GLuint error;
+
+  // create buffer for attribute 2: texture
+  glGenBuffers(1, &texture_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, texture_buffer);
+  glBufferData(GL_ARRAY_BUFFER, 4 * FACES * 2 * sizeof(GLfloat), texture_data, GL_STATIC_DRAW);
+  if ((error = glGetError()) != GL_NO_ERROR)
+    std::cerr << "init buffer error, gen vertex buffer: " << error << std::endl;
+}
+
+void SmokeSource::configureTextureAttribute()
+{
+  GLuint error;
+
+  glBindBuffer(GL_ARRAY_BUFFER, texture_buffer);
+
+  // enable texture data as attribute 2
+  // (index, size, type, normalized, stride, pointer)
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  if ((error = glGetError()) != GL_NO_ERROR)
+    std::cerr << "init buffer error, attrib pointer: " << error << std::endl;
+
+  // set attribute divisor
+  glVertexAttribDivisor(1, 0);
+  if ((error = glGetError()) != GL_NO_ERROR)
+    std::cerr << "init buffer error, attribute divisor: " << error << std::endl;
+}
+
 void SmokeSource::createPositionAttribute(GLfloat* position_data)
 {
   GLuint error;
 
-  // create buffer for attribute 2: position
+  // create buffer for attribute 3: position
   glGenBuffers(1, &position_buffer);
   glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
   glBufferData(GL_ARRAY_BUFFER, PARTICLES * 3 * sizeof(GLfloat), position_data, GL_STREAM_DRAW);
@@ -147,15 +195,15 @@ void SmokeSource::configurePositionAttribute()
 
   glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
 
-  // enable position data as attribute 2
+  // enable position data as attribute 3
   // (index, size, type, normalized, stride, pointer)
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  glEnableVertexAttribArray(2);
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, attrib pointer: " << error << std::endl;
 
   // set attribute divisor
-  glVertexAttribDivisor(1, 1);
+  glVertexAttribDivisor(2, 1);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, attribute divisor: " << error << std::endl;
 }
@@ -174,18 +222,19 @@ void SmokeSource::render(const glm::mat4& matrix, const RenderType type)
 
 void SmokeSource::animate()
 {
-  float scale = Window::delta_time / 4000.0f;
+  float up_scale = Window::delta_time / 2000.0f;
+  float side_scale = Window::delta_time / 4000.0f;
 
   // update velocity
   for (int i = 0; i < PARTICLES; i++)
-    velocity_data[i * 3 + 1] += scale * -1.0f;
+    velocity_data[i * 3 + 1] += up_scale * -1.0f;
 
   // update position
   for (int i = 0; i < PARTICLES; i++) 
   {
-    position_data[i * 3 + 0] += velocity_data[i * 3 + 0] * scale;
-    position_data[i * 3 + 1] += velocity_data[i * 3 + 1] * scale;
-    position_data[i * 3 + 2] += velocity_data[i * 3 + 2] * scale;
+    position_data[i * 3 + 0] += velocity_data[i * 3 + 0] * side_scale;
+    position_data[i * 3 + 1] += velocity_data[i * 3 + 1] * side_scale;
+    position_data[i * 3 + 2] += velocity_data[i * 3 + 2] * side_scale;
   }
 
   // kill and respawn particles
@@ -220,12 +269,14 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
 
   setShaderMatrix(matrix);
   
+  glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   glDrawArraysInstanced(GL_QUADS, 0, 4 * FACES, PARTICLES);
 
   glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
 
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);

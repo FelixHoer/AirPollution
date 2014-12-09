@@ -69,7 +69,8 @@ void setupScene()
   // terrain
 
   MatrixTransform* terrain = new MatrixTransform();
-  matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
+  matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10))
+         * glm::rotate(glm::mat4(), float(-M_PI/2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
   terrain->setMatrix(matrix);
   terrain->addChild(new Terrain());
 

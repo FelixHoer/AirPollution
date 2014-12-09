@@ -83,7 +83,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="KeyboardInputHandler.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MapReader.cpp" />
+    <ClCompile Include="TextureReader.cpp" />
     <ClCompile Include="MatrixTransform.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="ObjectCounter.cpp" />
@@ -107,7 +107,7 @@
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyboardInputHandler.h" />
-    <ClInclude Include="MapReader.h" />
+    <ClInclude Include="TextureReader.h" />
     <ClInclude Include="MatrixTransform.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="ObjectCounter.h" />

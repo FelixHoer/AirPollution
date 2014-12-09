@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <GL/glew.h>
 #include <GL/glut.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -40,7 +41,7 @@
 #include "ObjectCounter.h"
 
 #include "Terrain.h"
-#include "MapReader.h"
+#include "TextureReader.h"
 
 std::string textureFilename = "..\\Texture\\mapSquare.ppm";
 
@@ -49,7 +50,7 @@ std::string textureFilename = "..\\Texture\\mapSquare.ppm";
 
 Terrain::Terrain() : Terrain("Terrain")
 {
-	loadTexture(textureFilename);
+  texture = TextureReader::loadTexture(textureFilename);
 }
 
 Terrain::Terrain(char* n) : Geode(n)
@@ -76,6 +77,8 @@ void Terrain::renderTerrain(const glm::mat4& matrix)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(glm::value_ptr(matrix));
 
+  TextureReader::configureTexture(GL_TEXTURE0, texture);
+
 	glEnable(GL_TEXTURE_2D);							// enable 2D texture
 	glDisable(GL_TEXTURE_GEN_S);						// disable previous textures
 	glDisable(GL_TEXTURE_GEN_T);
@@ -89,10 +92,10 @@ void Terrain::renderTerrain(const glm::mat4& matrix)
 	glColor3f(1, 1, 1);
 
 	glNormal3f(0, 0, 1);
-	glTexCoord2f(0, 1); glVertex3f(-5, -5, -1);
-	glTexCoord2f(1, 1); glVertex3f(5, -5, -1);
-	glTexCoord2f(1, 0); glVertex3f(5, 5, -1);
-	glTexCoord2f(0, 0); glVertex3f(-5, 5, -1);
+	glTexCoord2f(0, 1); glVertex3f(-5, -5, 0);
+	glTexCoord2f(1, 1); glVertex3f(5, -5, 0);
+	glTexCoord2f(1, 0); glVertex3f(5, 5, 0);
+	glTexCoord2f(0, 0); glVertex3f(-5, 5, 0);
 
 	glEnd();
 
@@ -103,7 +106,7 @@ void Terrain::renderTerrain(const glm::mat4& matrix)
 void Terrain::initializeBoundingSphere()
 {
 	glm::vec3 center(0, 0, 0);
-	float radius = glm::length(center - glm::vec3(0.5, 0.5, 0.5));
+	float radius = glm::length(center - glm::vec3(5.0f, 5.0f, 5.0f));
 	bounding_sphere = BoundingSphere(center, radius);
 }
 

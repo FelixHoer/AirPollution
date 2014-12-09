@@ -78,10 +78,10 @@
     <ClCompile Include="SmokeShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MapReader.cpp">
+    <ClCompile Include="Terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Terrain.cpp">
+    <ClCompile Include="TextureReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,10 +146,10 @@
     <ClInclude Include="SmokeShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MapReader.h">
+    <ClInclude Include="Terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Terrain.h">
+    <ClInclude Include="TextureReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

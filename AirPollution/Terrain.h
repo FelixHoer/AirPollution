@@ -38,6 +38,8 @@
 class Terrain : public Geode
 {
 protected:
+  GLuint texture;
+
 	BoundingSphere bounding_sphere;
 
 	virtual void renderTerrain(const glm::mat4& matrix);

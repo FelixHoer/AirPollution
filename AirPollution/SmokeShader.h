@@ -9,14 +9,20 @@ protected:
   static const char* VERTEX_SHADER_PATH;
   static const char* FRAGMENT_SHADER_PATH;
 
+  static const char* TEXTURE_PATH;
+
   GLuint program;
   GLuint vertex_shader;
   GLuint fragment_shader;
+  GLuint texture;
 
   std::string readFile(std::string path);
 
   void createProgramWithShaders();
   void configureProgramWithShaders();
+
+  void createTexture();
+  void configureTexture();
 
   void setLightSource();
 
