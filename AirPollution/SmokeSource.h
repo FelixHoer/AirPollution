@@ -33,6 +33,7 @@ protected:
   void configurePositionAttribute();
 
   void animate();
+  void setShaderMatrix(const glm::mat4& matrix);
 
   virtual void renderSmoke(const glm::mat4& matrix);
 

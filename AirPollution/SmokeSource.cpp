@@ -198,6 +198,18 @@ void SmokeSource::animate()
   glBufferSubData(GL_ARRAY_BUFFER, 0, PARTICLES * 3 * sizeof(GLfloat), position_data);
 }
 
+void SmokeSource::setShaderMatrix(const glm::mat4& matrix)
+{
+  SmokeShader* ss = (SmokeShader*)parent;
+  glm::mat4 p_matrix;
+  glGetFloatv(GL_PROJECTION_MATRIX, glm::value_ptr(p_matrix));
+
+  glm::mat4 mvp_matrix = p_matrix * matrix;
+
+  GLint mvp_location = glGetUniformLocation(ss->getProgram(), "mvp_matrix");
+  glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp_matrix));
+}
+
 void SmokeSource::renderSmoke(const glm::mat4& matrix)
 {
   ObjectCounter::count();
@@ -205,16 +217,11 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
   configureArrayBuffer();
 
   animate();
+
+  setShaderMatrix(matrix);
   
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  SmokeShader* ss = (SmokeShader*)parent;
-  glm::mat4 p_matrix;
-  glGetFloatv(GL_PROJECTION_MATRIX, glm::value_ptr(p_matrix));
-  glm::mat4 mvp_matrix = p_matrix * matrix;
-  GLint mvp_location = glGetUniformLocation(ss->getProgram(), "mvp_matrix");
-  glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp_matrix));
 
   glDrawArraysInstanced(GL_QUADS, 0, 4 * FACES, PARTICLES);
 
