@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <algorithm>
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <glm/glm.hpp>
@@ -15,7 +16,7 @@
 SmokeSource::SmokeSource() : SmokeSource("SmokeSource")
 {}
 
-SmokeSource::SmokeSource(char* n) : Geode(n)
+SmokeSource::SmokeSource(char* n) : Geode(n), particles(0), desired_particles(0)
 {
   ObjectCounter::registerObject();
 }
@@ -24,9 +25,6 @@ void SmokeSource::setup()
 {
   initVertexData(vertex_data);
   initTextureData(texture_data);
-
-  for (int i = 0; i < PARTICLES; i++)
-    spawn(&(position_data[i * 3]), &(velocity_data[i * 3]));
 
   createArrayBuffer(vertex_data, position_data);
 
@@ -68,20 +66,6 @@ void SmokeSource::initTextureData(GLfloat* texture_data)
   }
 }
 
-void SmokeSource::spawn(GLfloat* position, GLfloat* velocity)
-{
-  position[0] = 0.0f;
-  position[1] = 0.0f;
-  position[2] = 0.0f;
-
-  float r1 = float(std::rand()) / RAND_MAX;
-  float r2 = float(std::rand()) / RAND_MAX;
-  float r3 = float(std::rand()) / RAND_MAX;
-  velocity[0] = r1 * 2.0f - 1.0f;
-  velocity[1] = r2;
-  velocity[2] = r3 * 2.0f - 1.0f;
-}
-
 void SmokeSource::createArrayBuffer(GLfloat* vertex_data, GLfloat* position_data)
 {
   GLuint error;
@@ -98,7 +82,7 @@ void SmokeSource::createArrayBuffer(GLfloat* vertex_data, GLfloat* position_data
 
   createVertexAttribute(vertex_data);
   createTextureAttribute(texture_data);
-  createPositionAttribute(position_data);
+  createPositionAttribute();
 }
 
 void SmokeSource::configureArrayBuffer()
@@ -112,7 +96,7 @@ void SmokeSource::configureArrayBuffer()
 
   configureVertexAttribute();
   configureTextureAttribute();
-  configurePositionAttribute();
+  configurePositionAttribute(NULL);
 }
 
 void SmokeSource::createVertexAttribute(GLfloat* vertex_data)
@@ -177,23 +161,24 @@ void SmokeSource::configureTextureAttribute()
     std::cerr << "init buffer error, attribute divisor: " << error << std::endl;
 }
 
-void SmokeSource::createPositionAttribute(GLfloat* position_data)
+void SmokeSource::createPositionAttribute()
 {
   GLuint error;
 
   // create buffer for attribute 3: position
   glGenBuffers(1, &position_buffer);
   glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
-  glBufferData(GL_ARRAY_BUFFER, PARTICLES * 3 * sizeof(GLfloat), position_data, GL_STREAM_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, MAX_PARTICLES * 3 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
   if ((error = glGetError()) != GL_NO_ERROR)
     std::cerr << "init buffer error, gen position buffer: " << error << std::endl;
 }
 
-void SmokeSource::configurePositionAttribute()
+void SmokeSource::configurePositionAttribute(GLfloat* position_data)
 {
   GLuint error;
 
   glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, particles * 3 * sizeof(GLfloat), position_data);
 
   // enable position data as attribute 3
   // (index, size, type, normalized, stride, pointer)
@@ -211,13 +196,75 @@ void SmokeSource::configurePositionAttribute()
 void SmokeSource::render(const glm::mat4& matrix, const RenderType type)
 {
   if (Window::enable_culling &&
-      !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
+    !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
+  {
+    if (type == RenderType::OBJECT)
+      particles = 0;
     return; // object was culled
+  }
 
   if (type == RenderType::OBJECT)
     renderSmoke(matrix);
   else if (type == RenderType::DEBUG)
     bounding_sphere.render(matrix);
+}
+
+void SmokeSource::adjustLevelOfDetail(float distance)
+{
+  unsigned int new_particles = MAX_PARTICLES / sqrt(distance);
+  desired_particles = std::min(new_particles, MAX_PARTICLES);
+
+  //std::cout << "parts: " << desired_particles << " / " << particles << std::endl;
+
+  // spawn new if more are needed
+  if (desired_particles > particles)
+  {
+    for (unsigned int i = particles; i < desired_particles; i++)
+      spawn(i);
+    particles = desired_particles;
+  }
+
+  // else let old ones just die
+}
+
+void SmokeSource::spawn(unsigned int next_dead)
+{
+  GLfloat* position = &(position_data[next_dead * 3]);
+  GLfloat* velocity = &(velocity_data[next_dead * 3]);
+
+  position[0] = 0.0f;
+  position[1] = 0.0f;
+  position[2] = 0.0f;
+
+  float r1 = float(std::rand()) / RAND_MAX;
+  float r2 = float(std::rand()) / RAND_MAX;
+  float r3 = float(std::rand()) / RAND_MAX;
+  velocity[0] = r1 * 2.0f - 1.0f;
+  velocity[1] = r2;
+  velocity[2] = r3 * 2.0f - 1.0f;
+}
+
+void SmokeSource::kill(unsigned int index)
+{
+  int last_alive = particles - 1;
+
+  // swap positions
+  for (unsigned int i = 0; i < 3; i++)
+  {
+    float temp = position_data[index * 3 + i];
+    position_data[index * 3 + i] = position_data[last_alive * 3 + i];
+    position_data[last_alive * 3 + i] = temp;
+  }
+
+  // swap velocities
+  for (unsigned int i = 0; i < 3; i++)
+  {
+    float temp = velocity_data[index * 3 + i];
+    velocity_data[index * 3 + i] = velocity_data[last_alive * 3 + i];
+    velocity_data[last_alive * 3 + i] = temp;
+  }
+
+  particles--;
 }
 
 void SmokeSource::animate()
@@ -226,11 +273,11 @@ void SmokeSource::animate()
   float side_scale = Window::delta_time / 6000.0f;
 
   // update velocity
-  for (int i = 0; i < PARTICLES; i++)
+  for (int i = 0; i < particles; i++)
     velocity_data[i * 3 + 1] += up_scale * -1.0f;
 
   // update position
-  for (int i = 0; i < PARTICLES; i++) 
+  for (int i = 0; i < particles; i++)
   {
     position_data[i * 3 + 0] += velocity_data[i * 3 + 0] * side_scale;
     position_data[i * 3 + 1] += velocity_data[i * 3 + 1] * side_scale;
@@ -238,13 +285,23 @@ void SmokeSource::animate()
   }
 
   // kill and respawn particles
-  for (int i = 0; i < PARTICLES; i++)
+  for (int i = 0; i < particles; i++)
+  {
     if (position_data[i * 3 + 1] <= 0.0f)
-      spawn(&(position_data[i * 3]), &(velocity_data[i * 3]));
+    {
+      if (particles <= desired_particles)
+        spawn(i);
+      else
+      {
+        kill(i); // kill and swap with last particle
+        i--; // check again on this position, since another particle will be here
+      }
+    }
+  }
 
   // update data in buffer
   glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, PARTICLES * 3 * sizeof(GLfloat), position_data);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, particles * 3 * sizeof(GLfloat), position_data);
 }
 
 void SmokeSource::setShaderMatrix(const glm::mat4& matrix)
@@ -265,6 +322,10 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
 
   configureArrayBuffer();
 
+  glm::vec3 position = glm::vec3(matrix * glm::vec4(0, 0, 0, 1));
+  float distance = glm::length(position);
+  adjustLevelOfDetail(distance);
+
   animate();
 
   setShaderMatrix(matrix);
@@ -273,7 +334,8 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  glDrawArraysInstanced(GL_QUADS, 0, 4 * FACES, PARTICLES);
+  std::cout << "parts: " << desired_particles << " / " << particles << std::endl;
+  glDrawArraysInstanced(GL_QUADS, 0, 4 * FACES, particles);
 
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);

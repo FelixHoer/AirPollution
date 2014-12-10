@@ -23,5 +23,5 @@ void main(void)
   
   texture_coordinates = texture_coordinates_in;
   
-  height = world_position.y;
+  height = position.y;
 }
