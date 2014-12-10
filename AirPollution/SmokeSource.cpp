@@ -223,7 +223,7 @@ void SmokeSource::render(const glm::mat4& matrix, const RenderType type)
 void SmokeSource::animate()
 {
   float up_scale = Window::delta_time / 2000.0f;
-  float side_scale = Window::delta_time / 4000.0f;
+  float side_scale = Window::delta_time / 6000.0f;
 
   // update velocity
   for (int i = 0; i < PARTICLES; i++)

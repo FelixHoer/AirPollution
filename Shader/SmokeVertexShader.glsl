@@ -11,8 +11,17 @@ layout(location = 1) out float height;
 
 void main(void)
 {
-  vec4 world_position = vec4(position + vertex_position, 1.0f);
+  vec3 zt = normalize(cross(position, vec3(0,1,0)));
+  vec3 yt = normalize(position);
+  vec3 xt = normalize(cross(yt, zt));
+  
+  vec3 offset = vertex_position.x * xt + 
+                vertex_position.y * yt + 
+                vertex_position.z * zt;
+  vec4 world_position = vec4(position + offset, 1.0f);
 	gl_Position = mvp_matrix * world_position;
+  
   texture_coordinates = texture_coordinates_in;
+  
   height = world_position.y;
 }
