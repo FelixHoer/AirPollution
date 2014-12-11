@@ -64,10 +64,32 @@ void Group::update(const int delta_time)
     (*it)->update(delta_time);
 }
 
+void Group::updateVisibility(const glm::mat4& matrix)
+{
+  BoundingSphere transformed_sphere = getBoundingSphere()->transform(matrix);
+  Status status = Window::camera->getFrustum()->check(transformed_sphere);
+  if (status == Status::OUTSIDE)
+    setVisible(false);
+  else if (status == Status::INSIDE)
+    setVisible(true);
+  else
+  {
+    visible = true;
+    for (std::list<Node*>::iterator it = children.begin(); it != children.end(); ++it)
+      (*it)->updateVisibility(matrix);
+  }
+}
+
+void Group::setVisible(bool v)
+{
+  visible = v;
+  for (std::list<Node*>::iterator it = children.begin(); it != children.end(); ++it)
+    (*it)->setVisible(v);
+}
+
 void Group::render(const glm::mat4& matrix)
 {
-  if (Window::enable_culling &&
-      !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
+  if (!visible)
     return; // object was culled
   
   for (std::list<Node*>::iterator it = children.begin(); it != children.end(); ++it)

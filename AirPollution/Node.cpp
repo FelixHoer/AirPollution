@@ -3,11 +3,12 @@
 #include <glm/glm.hpp>
 
 #include "Node.h"
+#include "Window.h"
 
 Node::Node()
 {}
 
-Node::Node(char* n) : name(n), parent(NULL)
+Node::Node(char* n) : name(n), parent(NULL), visible(false)
 {}
 
 void Node::setup()
@@ -17,6 +18,23 @@ void Node::setup()
 
 void Node::update(const int delta_time)
 {}
+
+void Node::updateVisibility(const glm::mat4& matrix)
+{
+  BoundingSphere* sphere = getBoundingSphere();
+  if (sphere == NULL) return;
+  BoundingSphere transformed_sphere = sphere->transform(matrix);
+  Status status = Window::camera->getFrustum()->check(transformed_sphere);
+  if (status == Status::OUTSIDE)
+    setVisible(false);
+  else
+    setVisible(true);
+}
+
+void Node::setVisible(bool v)
+{
+  visible = v;
+}
 
 void Node::render(const glm::mat4& matrix)
 {}

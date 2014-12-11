@@ -58,19 +58,19 @@ void Frustum::initialize(float left,
   planes[i++] = glm::vec4(n, d);
 }
 
-bool Frustum::isInside(const BoundingSphere& sphere)
+Status Frustum::check(const BoundingSphere& sphere)
 {
   for (int i = 0; i < 6; i++)
   {
     float dist = distanceToPlane(planes[i], sphere.getCenter());
     if (dist < -sphere.getRadius())
-      return false; // has to be completely outside
+      // has to be completely outside
+      return Status::OUTSIDE; 
     if (dist < sphere.getRadius())
-    {
       // sphere is partially outside - check children
-    }
+      return Status::PARTIAL;
   }
-  return true;
+  return Status::INSIDE;
 }
 
 float Frustum::distanceToPlane(const glm::vec4& plane, const glm::vec3& point)

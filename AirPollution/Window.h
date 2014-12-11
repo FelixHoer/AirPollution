@@ -17,7 +17,6 @@ public:
   static FPSCounter* fps_counter;
 
   static bool debug;
-  static bool enable_culling;
 
   static int time_since_start;
   static int delta_time;

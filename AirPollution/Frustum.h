@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include "BoundingSphere.h"
 
+enum Status {INSIDE, PARTIAL, OUTSIDE};
+
 class Frustum
 {
 protected:
@@ -19,7 +21,7 @@ public:
                            float near,
                            float far);
 
-  virtual bool isInside(const BoundingSphere& sphere);
+  virtual Status check(const BoundingSphere& sphere);
   virtual float distanceToPlane(const glm::vec4& plane, const glm::vec3& point);
 
 };

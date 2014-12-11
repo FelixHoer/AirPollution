@@ -19,9 +19,9 @@ Cube::Cube(char* n) : Geode(n)
 
 void Cube::render(const glm::mat4& matrix)
 {
-  if (Window::enable_culling &&
-    !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
+  if (!visible)
     return; // object was culled 
+
   ObjectCounter::count();
 
   glMatrixMode(GL_MODELVIEW);

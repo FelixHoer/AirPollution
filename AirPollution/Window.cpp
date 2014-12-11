@@ -18,7 +18,6 @@ std::vector<DirectionalLight*> Window::lights;
 FPSCounter* Window::fps_counter = NULL;
 
 bool Window::debug = false;
-bool Window::enable_culling = true;
 
 int Window::time_since_start = 0;
 int Window::delta_time = 0;
@@ -83,6 +82,7 @@ void Window::displayCallback(void)
   camera->configureCamera();
   for (std::vector<DirectionalLight*>::iterator it = lights.begin(); it != lights.end(); ++it)
     (*it)->configureLight();
+  root->updateVisibility(camera->getMatrix());
   root->render(camera->getMatrix());
   
   std::ostringstream os;

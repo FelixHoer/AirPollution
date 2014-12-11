@@ -25,8 +25,7 @@ void MapTile::setup()
 
 void MapTile::render(const glm::mat4& matrix)
 {
-  if (Window::enable_culling &&
-    !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
+  if (!visible)
     return; // object was culled
 
   if (Window::debug)

@@ -24,6 +24,8 @@ public:
 
   virtual void setup();
   virtual void update(const int delta_time); // in ms
+  virtual void updateVisibility(const glm::mat4& matrix);
+  virtual void setVisible(bool visible);
   virtual void render(const glm::mat4& matrix);
 
   virtual void initializeBoundingSphere();

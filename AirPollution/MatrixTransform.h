@@ -16,6 +16,7 @@ public:
   virtual void setMatrix(const glm::mat4& matrix);
   virtual glm::mat4 getMatrix();
 
+  virtual void updateVisibility(const glm::mat4& matrix);
   virtual void render(const glm::mat4& parent_matrix);
 
   virtual void initializeBoundingSphere();

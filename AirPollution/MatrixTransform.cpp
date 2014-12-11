@@ -20,6 +20,11 @@ glm::mat4 MatrixTransform::getMatrix()
   return matrix;
 }
 
+void MatrixTransform::updateVisibility(const glm::mat4& parent_matrix)
+{
+  Group::updateVisibility(parent_matrix * matrix);
+}
+
 void MatrixTransform::render(const glm::mat4& parent_matrix)
 {
   Group::render(parent_matrix * matrix);

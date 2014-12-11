@@ -300,8 +300,7 @@ void SmokeSource::setShaderMatrix(const glm::mat4& matrix)
 
 void SmokeSource::render(const glm::mat4& matrix)
 {
-  if (Window::enable_culling &&
-    !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
+  if (!visible)
   {
     particles = 0;
     return; // object was culled

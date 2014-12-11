@@ -17,7 +17,6 @@ protected:
 public:
   Camera();
 
-
   virtual void configureCamera();
 
   virtual glm::mat4 getMatrix();
