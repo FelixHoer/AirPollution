@@ -214,8 +214,6 @@ void SmokeSource::adjustLevelOfDetail(float distance)
   unsigned int new_particles = MAX_PARTICLES / sqrt(distance);
   desired_particles = std::min(new_particles, MAX_PARTICLES);
 
-  //std::cout << "parts: " << desired_particles << " / " << particles << std::endl;
-
   // spawn new if more are needed
   if (desired_particles > particles)
   {
@@ -273,11 +271,11 @@ void SmokeSource::animate()
   float side_scale = Window::delta_time / 6000.0f;
 
   // update velocity
-  for (int i = 0; i < particles; i++)
+  for (unsigned int i = 0; i < particles; i++)
     velocity_data[i * 3 + 1] += up_scale * -1.0f;
 
   // update position
-  for (int i = 0; i < particles; i++)
+  for (unsigned int i = 0; i < particles; i++)
   {
     position_data[i * 3 + 0] += velocity_data[i * 3 + 0] * side_scale;
     position_data[i * 3 + 1] += velocity_data[i * 3 + 1] * side_scale;
@@ -285,7 +283,7 @@ void SmokeSource::animate()
   }
 
   // kill and respawn particles
-  for (int i = 0; i < particles; i++)
+  for (unsigned int i = 0; i < particles; i++)
   {
     if (position_data[i * 3 + 1] <= 0.0f)
     {
@@ -334,7 +332,6 @@ void SmokeSource::renderSmoke(const glm::mat4& matrix)
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  std::cout << "parts: " << desired_particles << " / " << particles << std::endl;
   glDrawArraysInstanced(GL_QUADS, 0, 4 * FACES, particles);
 
   glDisable(GL_BLEND);

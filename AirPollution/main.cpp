@@ -11,7 +11,7 @@
 #include "Window.h"
 #include "MatrixTransform.h"
 #include "DirectionalLight.h"
-#include "Terrain.h"
+#include "Map.h"
 #include "Camera.h"
 #include "Cube.h"
 #include "EgoMovement.h"
@@ -68,17 +68,16 @@ void setupScene()
 
   // terrain
 
-  MatrixTransform* terrain = new MatrixTransform();
-  matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10))
-         * glm::rotate(glm::mat4(), float(-M_PI/2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-  terrain->setMatrix(matrix);
-  terrain->addChild(new Terrain());
+  MatrixTransform* map = new MatrixTransform();
+  matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
+  map->setMatrix(matrix);
+  map->addChild(new Map());
 
   // scene
 
   MatrixTransform* scene = new MatrixTransform();
   scene->addChild(directional_light);
-  scene->addChild(terrain);
+  scene->addChild(map);
   scene->addChild(camera);
   scene->addChild(cube);
   scene->addChild(smoke);

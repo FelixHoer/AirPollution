@@ -77,6 +77,8 @@ GLuint TextureReader::loadTexture(string filename)
 	texturePointer = loadPPM(filename.c_str(), textureWidth, textureHeight);
 	if (texturePointer == NULL) return 0;
 
+  glEnable(GL_TEXTURE_2D);
+
 	// Create ID for texture
 	glGenTextures(1, &texture[0]);
 
@@ -86,6 +88,12 @@ GLuint TextureReader::loadTexture(string filename)
 	// Generate texture
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, texturePointer);
 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
   return texture[0];
 }
 
@@ -93,8 +101,4 @@ void TextureReader::configureTexture(GLint texture_number, GLuint texture_id)
 {
   glActiveTexture(texture_number);
   glBindTexture(GL_TEXTURE_2D, texture_id);
-
-  // Set bi-linear filtering for both minification and magnification
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
