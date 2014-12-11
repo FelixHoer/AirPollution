@@ -5,8 +5,6 @@
 #include <string>
 #include "BoundingSphere.h"
 
-enum RenderType {CAMERA, LIGHT, OBJECT, DEBUG};
-
 class Node
 {
 protected:
@@ -19,7 +17,6 @@ public:
 
   virtual void setup();
   virtual void update(const int delta_time); // in ms
-  virtual void render(const glm::mat4& matrix, const RenderType type);
   virtual void render(const glm::mat4& matrix);
   virtual void destroy();
 

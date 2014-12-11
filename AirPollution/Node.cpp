@@ -7,7 +7,7 @@
 Node::Node()
 {}
 
-Node::Node(char* n) : name(n)
+Node::Node(char* n) : name(n), parent(NULL)
 {}
 
 void Node::setup()
@@ -17,12 +17,6 @@ void Node::setup()
 
 void Node::update(const int delta_time)
 {}
-
-void Node::render(const glm::mat4& matrix, const RenderType type)
-{
-  if (type == RenderType::OBJECT)
-    render(matrix);
-}
 
 void Node::render(const glm::mat4& matrix)
 {}

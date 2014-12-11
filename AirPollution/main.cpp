@@ -28,9 +28,11 @@ void setupScene()
 
   // light
 
+  DirectionalLight* light = new DirectionalLight(GL_LIGHT0);
+
   MatrixTransform* directional_light = new MatrixTransform();
   directional_light->setMatrix(glm::rotate(glm::mat4(), (float)M_PI / 6.f, glm::vec3(1, 0, 0)));
-  directional_light->addChild(new DirectionalLight(GL_LIGHT0));
+  directional_light->addChild(light);
 
   // camera
 
@@ -56,15 +58,15 @@ void setupScene()
 
   // object smoke
 
-  SmokeSource* ssource = new SmokeSource();
+  SmokeSource* smoke_source = new SmokeSource();
 
-  SmokeShader* sshader = new SmokeShader();
-  sshader->addChild(ssource);
+  SmokeShader* smoke_shader = new SmokeShader();
+  smoke_shader->addChild(smoke_source);
 
   MatrixTransform* smoke = new MatrixTransform();
   matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
   smoke->setMatrix(matrix);
-  smoke->addChild(sshader);
+  smoke->addChild(smoke_shader);
 
   // terrain
 
@@ -83,8 +85,11 @@ void setupScene()
   scene->addChild(smoke);
   scene->setup();
 
-  Window::root = scene;
+  // register in Window
+
   Window::camera = cam;
+  Window::lights.push_back(light);
+  Window::root = scene;
 }
 
 void setupApplication()

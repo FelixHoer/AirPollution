@@ -17,20 +17,11 @@ Cube::Cube(char* n) : Geode(n)
   ObjectCounter::registerObject();
 }
 
-void Cube::render(const glm::mat4& matrix, const RenderType type)
+void Cube::render(const glm::mat4& matrix)
 {
   if (Window::enable_culling &&
-      !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
-    return; // object was culled
-
-  if (type == RenderType::OBJECT)
-    renderCube(matrix);
-  else if (type == RenderType::DEBUG)
-    bounding_sphere.render(matrix);
-}
-
-void Cube::renderCube(const glm::mat4& matrix)
-{
+    !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
+    return; // object was culled 
   ObjectCounter::count();
 
   glMatrixMode(GL_MODELVIEW);
@@ -89,7 +80,7 @@ void Cube::renderCube(const glm::mat4& matrix)
 void Cube::initializeBoundingSphere()
 {
   glm::vec3 center(0, 0, 0);
-  float radius = glm::length(center - glm::vec3(0.5, 0.5, 0.5));
+  float radius = glm::length(center - glm::vec3(0.77, 0.77, 0.77));
   bounding_sphere = BoundingSphere(center, radius);
 }
 

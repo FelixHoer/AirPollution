@@ -10,14 +10,12 @@ protected:
 
 	BoundingSphere bounding_sphere;
 
-	virtual void renderTile(const glm::mat4& matrix);
-
 public:
   MapTile(char* name);
   MapTile(std::string name);
 
   virtual void setup();
-  virtual void render(const glm::mat4& matrix, const RenderType type);
+  virtual void render(const glm::mat4& matrix);
 
 	virtual void initializeBoundingSphere();
 	virtual BoundingSphere* getBoundingSphere();

@@ -12,10 +12,13 @@ protected:
   glm::mat4 matrix;
   Frustum frustum;
 
+  virtual glm::mat4 calculateMatrixUp();
+
 public:
   Camera();
 
-  virtual void render(const glm::mat4& matrix, const RenderType type);
+
+  virtual void configureCamera();
 
   virtual glm::mat4 getMatrix();
   virtual Frustum* getFrustum();

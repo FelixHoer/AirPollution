@@ -64,17 +64,16 @@ void Group::update(const int delta_time)
     (*it)->update(delta_time);
 }
 
-void Group::render(const glm::mat4& matrix, const RenderType type)
+void Group::render(const glm::mat4& matrix)
 {
   if (Window::enable_culling &&
-      (type == RenderType::OBJECT || type == RenderType::DEBUG) &&
       !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
     return; // object was culled
   
   for (std::list<Node*>::iterator it = children.begin(); it != children.end(); ++it)
-    (*it)->render(matrix, type);
+    (*it)->render(matrix);
 
-  if (type == RenderType::DEBUG)
+  if (Window::debug)
     bounding_sphere.render(matrix);
 }
 

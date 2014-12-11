@@ -193,22 +193,6 @@ void SmokeSource::configurePositionAttribute(GLfloat* position_data)
     std::cerr << "init buffer error, attribute divisor: " << error << std::endl;
 }
 
-void SmokeSource::render(const glm::mat4& matrix, const RenderType type)
-{
-  if (Window::enable_culling &&
-    !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
-  {
-    if (type == RenderType::OBJECT)
-      particles = 0;
-    return; // object was culled
-  }
-
-  if (type == RenderType::OBJECT)
-    renderSmoke(matrix);
-  else if (type == RenderType::DEBUG)
-    bounding_sphere.render(matrix);
-}
-
 void SmokeSource::adjustLevelOfDetail(float distance)
 {
   unsigned int new_particles = MAX_PARTICLES / sqrt(distance);
@@ -314,8 +298,18 @@ void SmokeSource::setShaderMatrix(const glm::mat4& matrix)
   glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp_matrix));
 }
 
-void SmokeSource::renderSmoke(const glm::mat4& matrix)
+void SmokeSource::render(const glm::mat4& matrix)
 {
+  if (Window::enable_culling &&
+    !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
+  {
+    particles = 0;
+    return; // object was culled
+  }
+
+  if (Window::debug)
+    bounding_sphere.render(matrix);
+
   ObjectCounter::count();
 
   configureArrayBuffer();

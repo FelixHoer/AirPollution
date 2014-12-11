@@ -45,14 +45,12 @@ protected:
   void animate();
   void setShaderMatrix(const glm::mat4& matrix);
 
-  virtual void renderSmoke(const glm::mat4& matrix);
-
 public:
   SmokeSource();
   SmokeSource(char* name);
 
   virtual void setup();
-  virtual void render(const glm::mat4& matrix, const RenderType type);
+  virtual void render(const glm::mat4& matrix);
 
   virtual void initializeBoundingSphere();
   virtual BoundingSphere* getBoundingSphere();

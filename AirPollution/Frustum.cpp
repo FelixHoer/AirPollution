@@ -64,7 +64,11 @@ bool Frustum::isInside(const BoundingSphere& sphere)
   {
     float dist = distanceToPlane(planes[i], sphere.getCenter());
     if (dist < -sphere.getRadius())
-      return false; // has to be outside
+      return false; // has to be completely outside
+    if (dist < sphere.getRadius())
+    {
+      // sphere is partially outside - check children
+    }
   }
   return true;
 }

@@ -7,16 +7,34 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "MatrixTransform.h"
 
 #include "Camera.h"
 
 Camera::Camera() : Node("Camera")
 {}
 
-void Camera::render(const glm::mat4& matrix, const RenderType type)
+glm::mat4 Camera::calculateMatrixUp()
 {
-  if (type != RenderType::CAMERA)
-    return;
+  glm::mat4 matrix;
+
+  Node* node = this;
+  while (node != NULL)
+  {
+    if (typeid(*node) == typeid(MatrixTransform))
+    {
+      MatrixTransform* transform = (MatrixTransform*)node;
+      matrix = transform->getMatrix() * matrix;
+    }
+    node = node->getParent();
+  }
+
+  return matrix;
+}
+
+void Camera::configureCamera()
+{
+  glm::mat4 matrix = calculateMatrixUp();
 
   float left = -1.0, right = 1.0, bottom = -1.0, top = 1.0, near = 1.0, far = 1000;
 

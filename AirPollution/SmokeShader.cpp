@@ -162,30 +162,14 @@ void SmokeShader::configureTexture()
   }
 }
 
-void SmokeShader::render(const glm::mat4& matrix, const RenderType type)
+void SmokeShader::render(const glm::mat4& matrix)
 {
-  if (type == RenderType::OBJECT)
-  {
-    configureProgramWithShaders();
-    configureTexture();
-    setLightSource();
-  }
+  configureProgramWithShaders();
+  configureTexture();
 
-  MatrixTransform::render(matrix, type);
+  MatrixTransform::render(matrix);
 
-  if (type == RenderType::OBJECT)
-  {
-    glUseProgram(0);
-  }
-}
-
-void SmokeShader::setLightSource()
-{
-  GLint intensity_location = glGetUniformLocation(program, "lightsource_intensity");
-  glUniform3f(intensity_location, 4.0f, 4.0f, 4.0f);
-
-  GLint direction_location = glGetUniformLocation(program, "lightsource_direction");
-  glUniform3f(direction_location, 0.6f, 0.8f, 1.0f);
+  glUseProgram(0);
 }
 
 GLuint SmokeShader::getProgram()

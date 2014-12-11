@@ -16,7 +16,7 @@ public:
   virtual void setMatrix(const glm::mat4& matrix);
   virtual glm::mat4 getMatrix();
 
-  virtual void render(const glm::mat4& parent_matrix, const RenderType type);
+  virtual void render(const glm::mat4& parent_matrix);
 
   virtual void initializeBoundingSphere();
   virtual BoundingSphere* getBoundingSphere();

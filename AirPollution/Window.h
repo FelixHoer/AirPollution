@@ -1,8 +1,10 @@
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 
+#include <vector>
 #include "Node.h"
 #include "Camera.h"
+#include "DirectionalLight.h"
 #include "FPSCounter.h"
 
 class Window	  // output window related routines
@@ -10,10 +12,11 @@ class Window	  // output window related routines
 public:
   static Node* root;
   static Camera* camera;
+  static std::vector<DirectionalLight*> lights;
 
   static FPSCounter* fps_counter;
 
-  static bool show_bounding_sphere;
+  static bool debug;
   static bool enable_culling;
 
   static int time_since_start;

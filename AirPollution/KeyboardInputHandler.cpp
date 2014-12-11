@@ -9,5 +9,5 @@ void KeyboardInputHandler::keyPressed(unsigned char key, int x, int y)
   if (key == 99) // c
     Window::enable_culling = !Window::enable_culling;
   else if (key == 115) // s
-    Window::show_bounding_sphere = !Window::show_bounding_sphere;
+    Window::debug = !Window::debug;
 }

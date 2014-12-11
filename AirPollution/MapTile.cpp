@@ -23,20 +23,15 @@ void MapTile::setup()
   texture = TextureReader::loadTexture(name);
 }
 
-void MapTile::render(const glm::mat4& matrix, const RenderType type)
+void MapTile::render(const glm::mat4& matrix)
 {
-	if (Window::enable_culling &&
-		!Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
-		return; // object was culled
+  if (Window::enable_culling &&
+    !Window::camera->getFrustum()->isInside(bounding_sphere.transform(matrix)))
+    return; // object was culled
 
-	if (type == RenderType::OBJECT)
-    renderTile(matrix);
-	else if (type == RenderType::DEBUG)
-		bounding_sphere.render(matrix);
-}
+  if (Window::debug)
+    bounding_sphere.render(matrix);
 
-void MapTile::renderTile(const glm::mat4& matrix)
-{
 	ObjectCounter::count();
 
 	glMatrixMode(GL_MODELVIEW);
@@ -70,7 +65,7 @@ void MapTile::renderTile(const glm::mat4& matrix)
 void MapTile::initializeBoundingSphere()
 {
 	glm::vec3 center(0, 0, 0);
-  float radius = 0.5f;
+  float radius = 0.77f;
 	bounding_sphere = BoundingSphere(center, radius);
 }
 

@@ -1,19 +1,21 @@
 #ifndef _DIRECTIONAL_LIGHT_H_
-#define _POINT_LIG_DIRECTIONAL_LIGHT_H_HT_H_
+#define _DIRECTIONAL_LIGHT_H_
 
 #include "Node.h"
+#include <GL/glut.h>
+#include <glm/glm.hpp>
 
 class DirectionalLight : public Node
 {
 protected:
   GLuint light_number;
 
-  virtual void setupLight(const glm::mat4& matrix);
+  virtual glm::mat4 calculateMatrixUp();
 
 public:
   DirectionalLight(GLuint light);
 
-  virtual void render(const glm::mat4& matrix, const RenderType type);
+  virtual void configureLight();
 };
 
 #endif

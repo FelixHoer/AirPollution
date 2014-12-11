@@ -4,18 +4,20 @@
 #include <sstream>
 #include <string>
 #include <GL/glut.h>
-#include "Window.h"
 #include "ObjectCounter.h"
+
+#include "Window.h"
 
 int Window::width = 512;    // set window width in pixels here
 int Window::height = 512;   // set window height in pixels here
 
 Node* Window::root = NULL;
 Camera* Window::camera = NULL;
+std::vector<DirectionalLight*> Window::lights;
 
 FPSCounter* Window::fps_counter = NULL;
 
-bool Window::show_bounding_sphere = true;
+bool Window::debug = false;
 bool Window::enable_culling = true;
 
 int Window::time_since_start = 0;
@@ -78,11 +80,10 @@ void Window::displayCallback(void)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // clear color and depth buffers
 
-  root->render(glm::mat4(), RenderType::CAMERA);
-  root->render(camera->getMatrix(), RenderType::LIGHT);
-  root->render(camera->getMatrix(), RenderType::OBJECT);
-  if (show_bounding_sphere)
-    root->render(camera->getMatrix(), RenderType::DEBUG);
+  camera->configureCamera();
+  for (std::vector<DirectionalLight*>::iterator it = lights.begin(); it != lights.end(); ++it)
+    (*it)->configureLight();
+  root->render(camera->getMatrix());
   
   std::ostringstream os;
   os << "FPS: " << fps_counter->getCount() << ", "

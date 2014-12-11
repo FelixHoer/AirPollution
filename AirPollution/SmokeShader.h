@@ -24,14 +24,12 @@ protected:
   void createTexture();
   void configureTexture();
 
-  void setLightSource();
-
 public:
   SmokeShader();
   SmokeShader(char* name);
 
   virtual void setup();
-  virtual void render(const glm::mat4& matrix, const RenderType type);
+  virtual void render(const glm::mat4& matrix);
 
   virtual GLuint getProgram();
 };

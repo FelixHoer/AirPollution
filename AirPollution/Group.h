@@ -24,7 +24,7 @@ public:
 
   virtual void setup();
   virtual void update(const int delta_time); // in ms
-  virtual void render(const glm::mat4& matrix, const RenderType type);
+  virtual void render(const glm::mat4& matrix);
 
   virtual void initializeBoundingSphere();
   virtual BoundingSphere* getBoundingSphere();

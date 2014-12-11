@@ -20,9 +20,9 @@ glm::mat4 MatrixTransform::getMatrix()
   return matrix;
 }
 
-void MatrixTransform::render(const glm::mat4& parent_matrix, const RenderType type)
+void MatrixTransform::render(const glm::mat4& parent_matrix)
 {
-  Group::render(parent_matrix * matrix, type);
+  Group::render(parent_matrix * matrix);
 }
 
 void MatrixTransform::initializeBoundingSphere()

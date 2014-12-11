@@ -8,13 +8,11 @@ class Cube : public Geode
 protected:
   BoundingSphere bounding_sphere;
 
-  virtual void renderCube(const glm::mat4& matrix);
-
 public:
   Cube();
   Cube(char* name);
 
-  virtual void render(const glm::mat4& matrix, const RenderType type);
+  virtual void render(const glm::mat4& matrix);
 
   virtual void initializeBoundingSphere();
   virtual BoundingSphere* getBoundingSphere();
