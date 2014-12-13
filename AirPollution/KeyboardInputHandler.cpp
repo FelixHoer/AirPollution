@@ -6,6 +6,6 @@
 
 void KeyboardInputHandler::keyPressed(unsigned char key, int x, int y)
 {
-  if (key == 115) // s
+  if (key == 100) // d
     Window::debug = !Window::debug;
 }

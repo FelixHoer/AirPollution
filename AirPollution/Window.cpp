@@ -85,10 +85,13 @@ void Window::displayCallback(void)
   root->updateVisibility(camera->getMatrix());
   root->render(camera->getMatrix());
   
-  std::ostringstream os;
-  os << "FPS: " << fps_counter->getCount() << ", "
-     << "Objects: " << ObjectCounter::getCount();
-  renderText(os.str().c_str());
+  if (Window::debug)
+  {
+    std::ostringstream os;
+    os << "FPS: " << fps_counter->getCount() << ", "
+       << "Objects: " << ObjectCounter::getCount();
+    renderText(os.str().c_str());
+  }
 
   fps_counter->count();
   ObjectCounter::endFrame();

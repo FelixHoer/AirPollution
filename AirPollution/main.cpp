@@ -22,7 +22,7 @@
 #include "SmokeSource.h"
 
 
-void setupScene()
+void setupScene(Data data)
 {
   glm::mat4 matrix;
 
@@ -83,20 +83,27 @@ void setupScene()
   scene->addChild(camera);
   scene->addChild(cube);
   scene->addChild(smoke);
-  scene->setup();
 
   // register in Window
 
   Window::camera = cam;
   Window::lights.push_back(light);
   Window::root = scene;
+
+  // setup
+
+  std::cout << "Setting up scene... ";
+  scene->setup();
+  std::cout << "done." << std::endl;
 }
 
 void setupApplication()
 {
+  std::cout << "Reading data... ";
   Data data = DataReader::read("..\\Data\\data.csv");
+  std::cout << "done." << std::endl;
 
-  setupScene();
+  setupScene(data);
 
   Window::fps_counter = new FPSCounter();
 
