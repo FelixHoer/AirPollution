@@ -58,10 +58,26 @@ void setupScene(Data data)
 
   // object smoke
 
-  SmokeSource* smoke_source = new SmokeSource();
+  float s_intensity_1 = 0.0f;
+  float s_intensity_2 = 0.3f;
+  float s_intensity_3 = 1.0f;
+
+  MatrixTransform* smoke_transform_1 = new MatrixTransform();
+  smoke_transform_1->setMatrix(glm::translate(glm::mat4(), glm::vec3(0, 0, 0)));
+  smoke_transform_1->addChild(new SmokeSource(&s_intensity_1, 1));
+
+  MatrixTransform* smoke_transform_2 = new MatrixTransform();
+  smoke_transform_2->setMatrix(glm::translate(glm::mat4(), glm::vec3(1, 0, 0)));
+  smoke_transform_2->addChild(new SmokeSource(&s_intensity_2, 1));
+
+  MatrixTransform* smoke_transform_3 = new MatrixTransform();
+  smoke_transform_3->setMatrix(glm::translate(glm::mat4(), glm::vec3(2, 0, 0)));
+  smoke_transform_3->addChild(new SmokeSource(&s_intensity_3, 1));
 
   SmokeShader* smoke_shader = new SmokeShader();
-  smoke_shader->addChild(smoke_source);
+  smoke_shader->addChild(smoke_transform_1);
+  smoke_shader->addChild(smoke_transform_2);
+  smoke_shader->addChild(smoke_transform_3);
 
   MatrixTransform* smoke = new MatrixTransform();
   matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
@@ -81,7 +97,7 @@ void setupScene(Data data)
   scene->addChild(directional_light);
   scene->addChild(map);
   scene->addChild(camera);
-  scene->addChild(cube);
+  //scene->addChild(cube);
   scene->addChild(smoke);
 
   // register in Window

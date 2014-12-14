@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <string>
+#include <typeinfo>
 #include "BoundingSphere.h"
 
 class Node
@@ -23,7 +24,9 @@ public:
   virtual void render(const glm::mat4& matrix);
   virtual void destroy();
 
-  virtual Node* find(const std::string& name);
+  virtual Node* findDown(const std::string& name);
+  virtual Node* findUp(const std::string& name);
+  virtual Node* findUp(const std::type_info& type);
 
   virtual void initializeBoundingSphere();
   virtual void recalculateBoundingSphere();

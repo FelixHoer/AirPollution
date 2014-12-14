@@ -33,17 +33,17 @@ void Group::removeChild(Node* child)
   recalculateBoundingSphere();
 }
 
-Node* Group::find(const std::string& name)
+Node* Group::findDown(const std::string& name)
 {
   Node* result = NULL;
 
-  result = Node::find(name);
+  result = Node::findDown(name);
   if (result != NULL)
     return result;
 
   for (std::list<Node*>::iterator it = children.begin(); it != children.end(); ++it)
   {
-    result = (*it)->find(name);
+    result = (*it)->findDown(name);
     if (result != NULL)
       return result;
   }

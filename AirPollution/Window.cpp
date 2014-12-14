@@ -17,6 +17,8 @@ std::vector<DirectionalLight*> Window::lights;
 
 FPSCounter* Window::fps_counter = NULL;
 
+unsigned int Window::active_measurement = 0;
+
 bool Window::debug = false;
 
 int Window::time_since_start = 0;

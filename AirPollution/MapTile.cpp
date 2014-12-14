@@ -64,7 +64,7 @@ void MapTile::render(const glm::mat4& matrix)
 void MapTile::initializeBoundingSphere()
 {
 	glm::vec3 center(0, 0, 0);
-  float radius = 0.77f;
+  float radius = 1.0f;
 	bounding_sphere = BoundingSphere(center, radius);
 }
 

@@ -24,6 +24,8 @@ protected:
   GLfloat position_data[3 * MAX_PARTICLES];
   GLfloat velocity_data[3 * MAX_PARTICLES];
 
+  GLfloat* intensities;
+
   void initVertexData(GLfloat* vertex_data);
   void initTextureData(GLfloat* texture_data);
 
@@ -44,10 +46,11 @@ protected:
   void adjustLevelOfDetail(float distance);
   void animate();
   void setShaderMatrix(const glm::mat4& matrix);
+  void setIntensity(GLfloat intensity);
 
 public:
-  SmokeSource();
-  SmokeSource(char* name);
+  SmokeSource(GLfloat* intensities, unsigned int intensities_size);
+  SmokeSource(char* name, GLfloat* intensities, unsigned int intensities_size);
 
   virtual void setup();
   virtual void render(const glm::mat4& matrix);

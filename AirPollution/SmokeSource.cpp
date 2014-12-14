@@ -13,12 +13,18 @@
 #include "SmokeSource.h"
 
 
-SmokeSource::SmokeSource() : SmokeSource("SmokeSource")
+SmokeSource::SmokeSource(GLfloat* intensities, unsigned int intensities_size) 
+: SmokeSource("SmokeSource", intensities, intensities_size)
 {}
 
-SmokeSource::SmokeSource(char* n) : Geode(n), particles(0), desired_particles(0)
+SmokeSource::SmokeSource(char* n, GLfloat* is, unsigned int is_size) 
+: Geode(n), particles(0), desired_particles(0)
 {
   ObjectCounter::registerObject();
+
+  intensities = new GLfloat[is_size];
+  for (unsigned int i = 0; i < is_size; i++)
+    intensities[i] = is[i];
 }
 
 void SmokeSource::setup()
@@ -288,7 +294,7 @@ void SmokeSource::animate()
 
 void SmokeSource::setShaderMatrix(const glm::mat4& matrix)
 {
-  SmokeShader* ss = (SmokeShader*)parent;
+  SmokeShader* ss = (SmokeShader*) findUp(typeid(SmokeShader));
   glm::mat4 p_matrix;
   glGetFloatv(GL_PROJECTION_MATRIX, glm::value_ptr(p_matrix));
 
@@ -296,6 +302,13 @@ void SmokeSource::setShaderMatrix(const glm::mat4& matrix)
 
   GLint mvp_location = glGetUniformLocation(ss->getProgram(), "mvp_matrix");
   glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp_matrix));
+}
+
+void SmokeSource::setIntensity(GLfloat intensity)
+{
+  SmokeShader* ss = (SmokeShader*) findUp(typeid(SmokeShader));
+  GLint location = glGetUniformLocation(ss->getProgram(), "intensity");
+  glUniform1f(location, intensity);
 }
 
 void SmokeSource::render(const glm::mat4& matrix)
@@ -320,6 +333,7 @@ void SmokeSource::render(const glm::mat4& matrix)
   animate();
 
   setShaderMatrix(matrix);
+  setIntensity(intensities[Window::active_measurement]);
   
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);

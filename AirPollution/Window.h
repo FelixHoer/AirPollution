@@ -18,6 +18,8 @@ public:
 
   static bool debug;
 
+  static unsigned int active_measurement;
+
   static int time_since_start;
   static int delta_time;
 

@@ -20,7 +20,8 @@ public:
   virtual void addChild(Node* child);
   virtual void addChildFirst(Node* child);
   virtual void removeChild(Node* child);
-  virtual Node* find(const std::string& name);
+
+  virtual Node* findDown(const std::string& name);
 
   virtual void setup();
   virtual void update(const int delta_time); // in ms

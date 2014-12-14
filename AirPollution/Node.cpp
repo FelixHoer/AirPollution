@@ -42,10 +42,30 @@ void Node::render(const glm::mat4& matrix)
 void Node::destroy()
 {}
 
-Node* Node::find(const std::string& n)
+Node* Node::findDown(const std::string& n)
 {
   if (name.compare(n) == 0)
     return this;
+  else
+    return NULL;
+}
+
+Node* Node::findUp(const std::string& n)
+{
+  if (name.compare(n) == 0)
+    return this;
+  else if (parent != NULL)
+    return parent->findUp(n);
+  else
+    return NULL;
+}
+
+Node* Node::findUp(const std::type_info& type)
+{
+  if (typeid(*this) == type)
+    return this;
+  else if (parent != NULL)
+    return parent->findUp(type);
   else
     return NULL;
 }
