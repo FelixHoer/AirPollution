@@ -335,7 +335,7 @@ void SmokeSource::render(const glm::mat4& matrix)
 
   setShaderMatrix(matrix);
   float intensity = intensities[Window::active_measurement];
-  if (intensity == FLT_MAX)
+  if (intensity > 0.9f * FLT_MAX)
     return;
   setIntensity(intensity);
   

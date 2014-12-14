@@ -28,14 +28,28 @@ typedef struct {
   float intensity[4];
 } Location;
 
+bool isInvalid(float a, float b)
+{
+  return a > 0.9f * b;
+}
+bool isInvalid(double a, double b)
+{
+  return a > 0.9 * b;
+}
+bool isInvalid(unsigned int a, unsigned int b)
+{
+  return a == b;
+}
+bool isInvalid(unsigned short a, unsigned short b)
+{
+  return a == b;
+}
+
 Location buildLocation(Data data, unsigned int from, unsigned int to)
 {
-  unsigned int same_count = to - from + 1;
-  DataPoint* first_point = data.points + from;
-
   // build a new location
   Location location;
-  location.position = glm::dvec2(first_point->latitude, first_point->longitude);
+  location.position = glm::dvec2(0, 0);
   location.intensity[0] = 0;
   location.intensity[1] = 0;
   location.intensity[2] = 0;
@@ -46,32 +60,38 @@ Location buildLocation(Data data, unsigned int from, unsigned int to)
   for (unsigned int j = from; j <= to; j++)
   {
     DataPoint* old_point = data.points + j;
-    if (old_point->pm10 != DataReader::INVALID_PM10)
+
+    location.position += glm::dvec2(old_point->latitude, old_point->longitude);
+
+    if (!isInvalid(old_point->pm10, DataReader::INVALID_PM10))
     {
       sizes[0]++;
       location.intensity[0] += old_point->pm10;
     }
-    if (old_point->pm25 != DataReader::INVALID_PM25)
+    if (!isInvalid(old_point->pm25, DataReader::INVALID_PM25))
     {
       sizes[1]++;
       location.intensity[1] += old_point->pm25;
     }
-    if (old_point->carbon != DataReader::INVALID_CARBON)
+    if (!isInvalid(old_point->carbon, DataReader::INVALID_CARBON))
     {
       sizes[2]++;
       location.intensity[2] += old_point->carbon;
     }
-    if (old_point->no2 != DataReader::INVALID_NO2)
+    if (!isInvalid(old_point->no2, DataReader::INVALID_NO2))
     {
       sizes[3]++;
       location.intensity[3] += old_point->no2;
     }
   }
+
+  // normalize
+  location.position /= to - from + 1;
   for (unsigned int i = 0; i < 4; i++)
     if (sizes[i] > 0)
       location.intensity[i] /= sizes[i];
     else
-      location.intensity[i] = FLT_MAX;
+      location.intensity[i] = FLT_MAX; // invalid
 
   return location;
 }
@@ -80,30 +100,11 @@ std::vector<Location> filterData(Data data)
 {
   std::vector<Location> locations;
 
-  unsigned int same_count = 0;
-  unsigned int start_index = 0;
-
   DataPoint* last_point = data.points;
-  for (unsigned int i = 1; i < data.size; i++)
+  for (unsigned int i = 0; i < data.size - 100; i += 100)
   {
-    DataPoint* point = data.points + i;
-    if (abs(point->latitude - last_point->latitude) < 0.00001 &&
-        abs(point->longitude - last_point->longitude) < 0.00001)
-    {
-      same_count++;
-    }
-    else
-    {
-      if (same_count > 10)
-        locations.push_back(buildLocation(data, start_index, i-1));
-      same_count = 0;
-      start_index = i;
-    }
-    last_point = point;
+    locations.push_back(buildLocation(data, i, i+100));
   }
-
-  if (same_count > 10)
-    locations.push_back(buildLocation(data, start_index, data.size-1));
 
   return locations;
 }
@@ -121,7 +122,7 @@ std::vector<Location> selectData(Data data)
     Location location = *it;
     for (unsigned int i = 0; i < 4; i++)
     {
-      if (location.intensity[i] != FLT_MAX)
+      if (!isInvalid(location.intensity[i], FLT_MAX))
       {
         if (location.intensity[i] < min_intensities[i])
           min_intensities[i] = location.intensity[i];
@@ -136,8 +137,13 @@ std::vector<Location> selectData(Data data)
     Location location = *it;
     for (unsigned int i = 0; i < 4; i++)
     {
-      if (location.intensity[i] != FLT_MAX)
+      if (!isInvalid(location.intensity[i], FLT_MAX)
+        && abs(min_intensities[i] - max_intensities[i]) > 0.00001
+        && min_intensities[i] < 0.9f * FLT_MAX
+        && max_intensities[i] > 0.1f)
         location.intensity[i] = (location.intensity[i] - min_intensities[i]) / (max_intensities[i] - min_intensities[i]);
+      else
+        location.intensity[i] = FLT_MAX;
     }
     output.push_back(location);
   }
