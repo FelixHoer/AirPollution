@@ -100,17 +100,30 @@ std::vector<Location> filterData(Data data)
 {
   std::vector<Location> locations;
 
-  for (unsigned int i = 815; i < 3729; i += 60)
+  unsigned int same_count = 0;
+  unsigned int start_index = 0;
+
+  DataPoint* last_point = data.points;
+  for (unsigned int i = 1; i < data.size; i++)
   {
-    DataPoint* point = &(data.points[i]);
-    Location location;
-    location.position = glm::dvec2(point->latitude, point->longitude);
-    location.intensity[0] = point->pm10;
-    location.intensity[1] = point->pm25;
-    location.intensity[2] = point->carbon;
-    location.intensity[3] = point->no2;
-    locations.push_back(location);
+    DataPoint* point = data.points + i;
+    if (abs(point->latitude - last_point->latitude) < 0.0001 &&
+        abs(point->longitude - last_point->longitude) < 0.0001)
+    {
+      same_count++;
+    }
+    else
+    {
+      if (same_count > 10)
+        locations.push_back(buildLocation(data, start_index, i - 1));
+      same_count = 0;
+      start_index = i;
+    }
+    last_point = point;
   }
+
+  if (same_count > 10)
+    locations.push_back(buildLocation(data, start_index, data.size - 1));
 
   return locations;
 }

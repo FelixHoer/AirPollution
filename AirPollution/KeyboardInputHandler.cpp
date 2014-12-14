@@ -10,13 +10,13 @@ void KeyboardInputHandler::keyPressed(unsigned char key, int x, int y)
   {
   case 100: // d
     Window::debug = !Window::debug; break;
-  case 48: // 0
-    Window::active_measurement = 0; break;
   case 49: // 1
-    Window::active_measurement = 1; break;
+    Window::active_measurement = 0; break;
   case 50: // 2
-    Window::active_measurement = 2; break;
+    Window::active_measurement = 1; break;
   case 51: // 3
+    Window::active_measurement = 2; break;
+  case 52: // 0
     Window::active_measurement = 3; break;
   }
 }
