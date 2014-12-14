@@ -52,7 +52,7 @@ Data DataReader::readFromCache(char* path)
   infile.read((char*) &size, sizeof(unsigned int));
 
   DataPoint* points = new DataPoint[size];
-  infile.read((char*) points, size * sizeof(DataPoint*));
+  infile.read((char*) points, size * sizeof(DataPoint));
 
   Data data;
   data.size = size;
@@ -79,8 +79,14 @@ void DataReader::createCache(char* path)
     // read lines and split them
     std::vector<std::string> parts = nextParts(file);
 
+    if (current_size == 1201)
+    {
+      std::cout << "bla" << std::endl;
+    }
+
     // convert types and set in datapoint
     setProperties(&(points[current_size]), parts);
+    points[current_size].line = current_size + 2;
     current_size += 1;
 
     if (current_size % 100 == 0)

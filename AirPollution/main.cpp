@@ -100,10 +100,16 @@ std::vector<Location> filterData(Data data)
 {
   std::vector<Location> locations;
 
-  DataPoint* last_point = data.points;
-  for (unsigned int i = 0; i < data.size - 100; i += 100)
+  for (unsigned int i = 815; i < 3729; i += 60)
   {
-    locations.push_back(buildLocation(data, i, i+100));
+    DataPoint* point = &(data.points[i]);
+    Location location;
+    location.position = glm::dvec2(point->latitude, point->longitude);
+    location.intensity[0] = point->pm10;
+    location.intensity[1] = point->pm25;
+    location.intensity[2] = point->carbon;
+    location.intensity[3] = point->no2;
+    locations.push_back(location);
   }
 
   return locations;
@@ -188,7 +194,7 @@ void setupScene(Data data)
 
   SmokeShader* smoke_shader = new SmokeShader();
 
-  std::vector<Location> locations;// = selectData(data);
+  std::vector<Location> locations = selectData(data);
   for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); ++it)
   {
     Location location = *it;

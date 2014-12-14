@@ -2,6 +2,8 @@
 #define _DATA_READER_H_
 
 typedef struct {
+  unsigned int line;
+
   unsigned short year;
   unsigned char month;
   unsigned char day;

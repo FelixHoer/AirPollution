@@ -88,7 +88,7 @@ void Window::displayCallback(void)
   root->updateVisibility(camera->getMatrix());
   root->render(camera->getMatrix());
   
-  if (Window::debug)
+  //if (Window::debug)
   {
     std::ostringstream os;
     os << "FPS: " << fps_counter->getCount() << ", "
