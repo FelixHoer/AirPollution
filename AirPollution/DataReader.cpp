@@ -172,8 +172,8 @@ DataPoint* DataReader::setProperties(DataPoint* target, std::vector<std::string>
 
   target->seconds = 0; // interpolate later
 
-  target->latitude = std::stod(parts[1]);
-  target->longitude = std::stod(parts[2]);
+  target->latitude = std::stod(parts[3]);
+  target->longitude = std::stod(parts[4]);
 
   try { target->pm10 = std::stoi(parts[11]); }
   catch (...) { target->pm10 = INVALID_PM10; }

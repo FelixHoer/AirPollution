@@ -334,7 +334,10 @@ void SmokeSource::render(const glm::mat4& matrix)
   animate();
 
   setShaderMatrix(matrix);
-  setIntensity(intensities[Window::active_measurement]);
+  float intensity = intensities[Window::active_measurement];
+  if (intensity == FLT_MAX)
+    return;
+  setIntensity(intensity);
   
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);

@@ -22,6 +22,129 @@
 #include "SmokeSource.h"
 
 
+
+typedef struct {
+  glm::dvec2 position;
+  float intensity[4];
+} Location;
+
+Location buildLocation(Data data, unsigned int from, unsigned int to)
+{
+  unsigned int same_count = to - from + 1;
+  DataPoint* first_point = data.points + from;
+
+  // build a new location
+  Location location;
+  location.position = glm::dvec2(first_point->latitude, first_point->longitude);
+  location.intensity[0] = 0;
+  location.intensity[1] = 0;
+  location.intensity[2] = 0;
+  location.intensity[3] = 0;
+
+  // calculate average
+  unsigned int sizes[4] = {0, 0, 0, 0};
+  for (unsigned int j = from; j <= to; j++)
+  {
+    DataPoint* old_point = data.points + j;
+    if (old_point->pm10 != DataReader::INVALID_PM10)
+    {
+      sizes[0]++;
+      location.intensity[0] += old_point->pm10;
+    }
+    if (old_point->pm25 != DataReader::INVALID_PM25)
+    {
+      sizes[1]++;
+      location.intensity[1] += old_point->pm25;
+    }
+    if (old_point->carbon != DataReader::INVALID_CARBON)
+    {
+      sizes[2]++;
+      location.intensity[2] += old_point->carbon;
+    }
+    if (old_point->no2 != DataReader::INVALID_NO2)
+    {
+      sizes[3]++;
+      location.intensity[3] += old_point->no2;
+    }
+  }
+  for (unsigned int i = 0; i < 4; i++)
+    if (sizes[i] > 0)
+      location.intensity[i] /= sizes[i];
+    else
+      location.intensity[i] = FLT_MAX;
+
+  return location;
+}
+
+std::vector<Location> filterData(Data data)
+{
+  std::vector<Location> locations;
+
+  unsigned int same_count = 0;
+  unsigned int start_index = 0;
+
+  DataPoint* last_point = data.points;
+  for (unsigned int i = 1; i < data.size; i++)
+  {
+    DataPoint* point = data.points + i;
+    if (abs(point->latitude - last_point->latitude) < 0.00001 &&
+        abs(point->longitude - last_point->longitude) < 0.00001)
+    {
+      same_count++;
+    }
+    else
+    {
+      if (same_count > 10)
+        locations.push_back(buildLocation(data, start_index, i-1));
+      same_count = 0;
+      start_index = i;
+    }
+    last_point = point;
+  }
+
+  if (same_count > 10)
+    locations.push_back(buildLocation(data, start_index, data.size-1));
+
+  return locations;
+}
+
+std::vector<Location> selectData(Data data)
+{
+  std::vector<Location> locations = filterData(data);
+  std::vector<Location> output;
+
+  float min_intensities[4] = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
+  float max_intensities[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  
+  for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); ++it)
+  {
+    Location location = *it;
+    for (unsigned int i = 0; i < 4; i++)
+    {
+      if (location.intensity[i] != FLT_MAX)
+      {
+        if (location.intensity[i] < min_intensities[i])
+          min_intensities[i] = location.intensity[i];
+        if (location.intensity[i] > max_intensities[i])
+          max_intensities[i] = location.intensity[i];
+      }
+    }
+  }
+
+  for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); ++it)
+  {
+    Location location = *it;
+    for (unsigned int i = 0; i < 4; i++)
+    {
+      if (location.intensity[i] != FLT_MAX)
+        location.intensity[i] = (location.intensity[i] - min_intensities[i]) / (max_intensities[i] - min_intensities[i]);
+    }
+    output.push_back(location);
+  }
+
+  return output;
+}
+
 void setupScene(Data data)
 {
   glm::mat4 matrix;
@@ -57,41 +180,34 @@ void setupScene(Data data)
 
   // object smoke
 
-  float s_intensity_1 = 1.0f;
-  float s_intensity_2 = 0.5f;
-  float s_intensity_3 = 1.0f;
-
-  glm::vec2 pos_1 = map_object->getPosition(glm::dvec2(32.66273436, -117.1153007));
-  glm::vec2 pos_2 = map_object->getPosition(glm::dvec2(32.68041808, -117.0796912));
-  glm::vec2 pos_3 = map_object->getPosition(glm::dvec2(32.68160058, -117.0808056));
-  
-  MatrixTransform* smoke_transform_1 = new MatrixTransform();
-  smoke_transform_1->setMatrix(glm::translate(glm::mat4(), glm::vec3(pos_1.x, 0, pos_1.y)));
-  smoke_transform_1->addChild(new SmokeSource(&s_intensity_1, 1));
-
-  MatrixTransform* smoke_transform_2 = new MatrixTransform();
-  smoke_transform_2->setMatrix(glm::translate(glm::mat4(), glm::vec3(pos_2.x, 0, pos_2.y)));
-  smoke_transform_2->addChild(new SmokeSource(&s_intensity_2, 1));
-
-  MatrixTransform* smoke_transform_3 = new MatrixTransform();
-  smoke_transform_3->setMatrix(glm::translate(glm::mat4(), glm::vec3(pos_3.x, 0, pos_3.y)));
-  smoke_transform_3->addChild(new SmokeSource(&s_intensity_3, 1));
-
   SmokeShader* smoke_shader = new SmokeShader();
-  smoke_shader->addChild(smoke_transform_1);
-  smoke_shader->addChild(smoke_transform_2);
-  smoke_shader->addChild(smoke_transform_3);
+
+  std::vector<Location> locations;// = selectData(data);
+  for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); ++it)
+  {
+    Location location = *it;
+
+    glm::vec2 pos = map_object->getPosition(location.position);
+
+    MatrixTransform* smoke_transform = new MatrixTransform();
+    smoke_transform->setMatrix(glm::translate(glm::mat4(), glm::vec3(pos.x, 0, pos.y)));
+    smoke_transform->addChild(new SmokeSource(location.intensity, 4));
+
+    smoke_shader->addChild(smoke_transform);
+  }
 
   MatrixTransform* smoke = new MatrixTransform();
   smoke->addChild(smoke_shader);
 
   // cube
 
+  /*
   MatrixTransform* cube = new MatrixTransform();
   matrix = glm::translate(glm::mat4(), glm::vec3(pos_1.x, 0, pos_1.y))
          * glm::scale(glm::mat4(), glm::vec3(0.1, 0.1, 0.1));
   cube->setMatrix(matrix);
   cube->addChild(new Cube());
+  */
 
   // scene
 
