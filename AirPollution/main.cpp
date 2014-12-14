@@ -36,42 +36,45 @@ void setupScene(Data data)
 
   // camera
 
-  Camera* cam = new Camera();
+  Camera* camera_object = new Camera();
+
   MatrixTransform* movement_matrix = new MatrixTransform();
-  movement_matrix->addChild(cam);
+  movement_matrix->addChild(camera_object);
   movement_matrix->addChild(new EgoMovement());
 
   MatrixTransform* camera = new MatrixTransform();
-  matrix = glm::rotate(glm::mat4(), (float)M_PI / 6.f, glm::vec3(0, 1, 0))
-         * glm::rotate(glm::mat4(), (float)-M_PI / 6.f, glm::vec3(1, 0, 0))
-         * glm::translate(glm::mat4(), glm::vec3(0, 0, 20));
+  matrix = glm::translate(glm::mat4(), glm::vec3(16, 16, 0));
   camera->setMatrix(matrix);
   camera->addChild(movement_matrix);
 
-  // cube
+  // map
 
-  MatrixTransform* cube = new MatrixTransform();
-  matrix = glm::translate(glm::mat4(), glm::vec3(20, 0, 0))
-         * glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
-  cube->setMatrix(matrix);
-  cube->addChild(new Cube());
+  Map* map_object = new Map(11434, 26458, 32, 16);
+
+  MatrixTransform* map = new MatrixTransform();
+  map->setMatrix(glm::translate(glm::mat4(), glm::vec3(16, 0, 16)));
+  map->addChild(map_object);
 
   // object smoke
 
-  float s_intensity_1 = 0.0f;
-  float s_intensity_2 = 0.3f;
+  float s_intensity_1 = 1.0f;
+  float s_intensity_2 = 0.5f;
   float s_intensity_3 = 1.0f;
 
+  glm::vec2 pos_1 = map_object->getPosition(glm::dvec2(32.66273436, -117.1153007));
+  glm::vec2 pos_2 = map_object->getPosition(glm::dvec2(32.68041808, -117.0796912));
+  glm::vec2 pos_3 = map_object->getPosition(glm::dvec2(32.68160058, -117.0808056));
+  
   MatrixTransform* smoke_transform_1 = new MatrixTransform();
-  smoke_transform_1->setMatrix(glm::translate(glm::mat4(), glm::vec3(0, 0, 0)));
+  smoke_transform_1->setMatrix(glm::translate(glm::mat4(), glm::vec3(pos_1.x, 0, pos_1.y)));
   smoke_transform_1->addChild(new SmokeSource(&s_intensity_1, 1));
 
   MatrixTransform* smoke_transform_2 = new MatrixTransform();
-  smoke_transform_2->setMatrix(glm::translate(glm::mat4(), glm::vec3(1, 0, 0)));
+  smoke_transform_2->setMatrix(glm::translate(glm::mat4(), glm::vec3(pos_2.x, 0, pos_2.y)));
   smoke_transform_2->addChild(new SmokeSource(&s_intensity_2, 1));
 
   MatrixTransform* smoke_transform_3 = new MatrixTransform();
-  smoke_transform_3->setMatrix(glm::translate(glm::mat4(), glm::vec3(2, 0, 0)));
+  smoke_transform_3->setMatrix(glm::translate(glm::mat4(), glm::vec3(pos_3.x, 0, pos_3.y)));
   smoke_transform_3->addChild(new SmokeSource(&s_intensity_3, 1));
 
   SmokeShader* smoke_shader = new SmokeShader();
@@ -80,31 +83,32 @@ void setupScene(Data data)
   smoke_shader->addChild(smoke_transform_3);
 
   MatrixTransform* smoke = new MatrixTransform();
-  matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
-  smoke->setMatrix(matrix);
   smoke->addChild(smoke_shader);
 
-  // terrain
+  // cube
 
-  MatrixTransform* map = new MatrixTransform();
-  matrix = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
-  map->setMatrix(matrix);
-  map->addChild(new Map());
+  MatrixTransform* cube = new MatrixTransform();
+  matrix = glm::translate(glm::mat4(), glm::vec3(pos_1.x, 0, pos_1.y))
+         * glm::scale(glm::mat4(), glm::vec3(0.1, 0.1, 0.1));
+  cube->setMatrix(matrix);
+  cube->addChild(new Cube());
 
   // scene
 
   MatrixTransform* scene = new MatrixTransform();
+  scene->setMatrix(glm::scale(glm::mat4(), glm::vec3(10, 10, 10)));
+  scene->addChild(camera);
   scene->addChild(directional_light);
   scene->addChild(map);
-  scene->addChild(camera);
-  //scene->addChild(cube);
   scene->addChild(smoke);
+  //scene->addChild(cube);
 
   // register in Window
 
-  Window::camera = cam;
+  Window::camera = camera_object;
   Window::lights.push_back(light);
   Window::root = scene;
+  Window::map = map_object;
 
   // setup
 

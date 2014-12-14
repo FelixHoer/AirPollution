@@ -5,6 +5,7 @@
 #include "Node.h"
 #include "Camera.h"
 #include "DirectionalLight.h"
+#include "Map.h"
 #include "FPSCounter.h"
 
 class Window	  // output window related routines
@@ -13,6 +14,7 @@ public:
   static Node* root;
   static Camera* camera;
   static std::vector<DirectionalLight*> lights;
+  static Map* map;
 
   static FPSCounter* fps_counter;
 

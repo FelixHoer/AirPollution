@@ -6,6 +6,7 @@
 #include <GL/glut.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Window.h"
 #include "ObjectCounter.h"
 #include "SmokeShader.h"
@@ -13,11 +14,11 @@
 #include "SmokeSource.h"
 
 
-SmokeSource::SmokeSource(GLfloat* intensities, unsigned int intensities_size) 
+SmokeSource::SmokeSource(GLfloat* intensities, unsigned int intensities_size)
 : SmokeSource("SmokeSource", intensities, intensities_size)
 {}
 
-SmokeSource::SmokeSource(char* n, GLfloat* is, unsigned int is_size) 
+SmokeSource::SmokeSource(char* n, GLfloat* is, unsigned int is_size)
 : Geode(n), particles(0), desired_particles(0)
 {
   ObjectCounter::registerObject();
@@ -350,7 +351,7 @@ void SmokeSource::render(const glm::mat4& matrix)
 
 void SmokeSource::initializeBoundingSphere()
 {
-  glm::vec3 center(0, 0, 0);
+  glm::vec3 center(0,0,0);
   float radius = glm::length(center - glm::vec3(0.5f, 0.5f, 0.5f));
   bounding_sphere = BoundingSphere(center, radius);
 }

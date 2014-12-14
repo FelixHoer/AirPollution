@@ -14,6 +14,7 @@ int Window::height = 512;   // set window height in pixels here
 Node* Window::root = NULL;
 Camera* Window::camera = NULL;
 std::vector<DirectionalLight*> Window::lights;
+Map* Window::map = NULL;
 
 FPSCounter* Window::fps_counter = NULL;
 

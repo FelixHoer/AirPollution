@@ -8,15 +8,20 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "MapTile.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "Map.h"
 
-Map::Map() : Map("Terrain")
+Map::Map(unsigned int x_min, unsigned int y_min, unsigned int size, unsigned int zoom) 
+: Map("Terrain", x_min, y_min, size, zoom)
 {}
 
-Map::Map(char* n) : MatrixTransform(n)
+Map::Map(char* n, unsigned int x, unsigned int y, unsigned int s, unsigned int z)
+: MatrixTransform(n), x_min(x), y_min(y), size(s), zoom(z)
 {}
 
-void generateLevel(MatrixTransform* parent, 
+void Map::generateLevel(MatrixTransform* parent,
   unsigned int x, 
   unsigned int y, 
   unsigned int size)
@@ -55,37 +60,18 @@ void generateLevel(MatrixTransform* parent,
 
 void Map::setup()
 {
-  unsigned int x_min = 11434;
-  unsigned int y_min = 26458;
-
-  generateLevel(this, x_min, y_min, 32);
+  generateLevel(this, x_min, y_min, size);
   MatrixTransform::setup();
 }
 
-/*
-void Map::setup()
+glm::vec2 Map::getPosition(glm::dvec2 latlon)
 {
-  unsigned int x_min = 11434;
-  unsigned int x_max = x_min + 32;
-  unsigned int y_min = 26458;
-  unsigned int y_max = y_min + 32;
+  double lat = latlon[0];
+  double lon = latlon[1];
 
-  // add map tiles from ranges
-  for (unsigned int x = x_min; x < x_max; x++)
-  {
-    for (unsigned int y = y_min; y < y_max; y++)
-    {
-      std::stringstream file;
-      file << "..\\Texture\\Map\\tile-" << x << "-" << y << ".png.ppm";
-
-      MatrixTransform* position = new MatrixTransform();
-      position->setMatrix(glm::translate(glm::mat4(), glm::vec3(x - x_min, 0.0f, y - y_min)));
-      position->addChild(new MapTile(file.str()));
-
-      addChild(position);
-    }
-  }
-
-  MatrixTransform::setup();
+  // conversion code taken from: http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+  float x = (lon + 180.0) / 360.0 * pow(2.0, zoom);
+  float y = (1.0 - log(tan(lat * M_PI / 180.0) + 1.0 / cos(lat * M_PI / 180.0)) / M_PI) / 2.0 * pow(2.0, zoom);
+  
+  return glm::vec2(x - x_min, y - y_min);
 }
-*/
