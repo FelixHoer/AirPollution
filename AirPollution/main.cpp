@@ -215,12 +215,11 @@ void setupScene(Data data)
     * glm::rotate(glm::mat4(), -float(M_PI / 4), glm::vec3(1, 0, 0));
   movement_matrix->setMatrix(matrix);
   movement_matrix->addChild(camera_object);
-  //movement_matrix->addChild(new EgoMovement());
-  //movement_matrix->addChild(new BezierMovement(locations));
+  movement_matrix->addChild(new EgoMovement());
 
   MatrixTransform* camera = new MatrixTransform();
-  camera->addChild(new Cube());
-  camera->addChild(new BezierMovement(locations));
+  //camera->addChild(new Cube());
+  //camera->addChild(new BezierMovement(locations));
   camera->addChild(movement_matrix);
 
   // cube
@@ -276,7 +275,7 @@ int main(int argc, char *argv[])
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);   // open an OpenGL context with double buffering, RGB colors, and depth buffering
   glutInitWindowSize(Window::width, Window::height);      // set initial window size
   glutCreateWindow("OpenGL Cube");    	      // open window and set window title
-  //glutFullScreen();
+  glutFullScreen();
 
   if (glutGet(GLUT_WINDOW_COLORMAP_SIZE) != 0)
   {
