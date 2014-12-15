@@ -18,5 +18,7 @@ void KeyboardInputHandler::keyPressed(unsigned char key, int x, int y)
     Window::active_measurement = 2; break;
   case 52: // 0
     Window::active_measurement = 3; break;
+  case 27: // escape
+    exit(0); break;
   }
 }

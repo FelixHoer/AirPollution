@@ -21,8 +21,6 @@
 #include "SmokeShader.h"
 #include "SmokeSource.h"
 
-
-
 typedef struct {
   glm::dvec2 position;
   float intensity[4];
@@ -277,7 +275,8 @@ int main(int argc, char *argv[])
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);   // open an OpenGL context with double buffering, RGB colors, and depth buffering
   glutInitWindowSize(Window::width, Window::height);      // set initial window size
   glutCreateWindow("OpenGL Cube");    	      // open window and set window title
-  
+  glutFullScreen();
+
   if (glutGet(GLUT_WINDOW_COLORMAP_SIZE) != 0)
   {
     std::cerr << "Fatal Error: bad RGBA colormap size\n" << std::endl;
