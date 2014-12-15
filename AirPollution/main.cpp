@@ -15,16 +15,13 @@
 #include "Camera.h"
 #include "Cube.h"
 #include "EgoMovement.h"
+#include "BezierMovement.h"
 #include "InputManager.h"
 #include "KeyboardInputHandler.h"
 #include "DataReader.h"
 #include "SmokeShader.h"
 #include "SmokeSource.h"
 
-typedef struct {
-  glm::dvec2 position;
-  float intensity[4];
-} Location;
 
 bool isInvalid(float a, float b)
 {
@@ -180,19 +177,6 @@ void setupScene(Data data)
   directional_light->setMatrix(glm::rotate(glm::mat4(), (float)M_PI / 6.f, glm::vec3(1, 0, 0)));
   directional_light->addChild(light);
 
-  // camera
-
-  Camera* camera_object = new Camera();
-
-  MatrixTransform* movement_matrix = new MatrixTransform();
-  movement_matrix->addChild(camera_object);
-  movement_matrix->addChild(new EgoMovement());
-
-  MatrixTransform* camera = new MatrixTransform();
-  matrix = glm::translate(glm::mat4(), glm::vec3(16, 16, 0));
-  camera->setMatrix(matrix);
-  camera->addChild(movement_matrix);
-
   // map
 
   Map* map_object = new Map(11434, 26458, 32, 16);
@@ -221,6 +205,23 @@ void setupScene(Data data)
 
   MatrixTransform* smoke = new MatrixTransform();
   smoke->addChild(smoke_shader);
+
+  // camera
+
+  Camera* camera_object = new Camera();
+
+  MatrixTransform* movement_matrix = new MatrixTransform();
+  matrix = glm::translate(glm::mat4(), glm::vec3(0, 3, 3))
+    * glm::rotate(glm::mat4(), -float(M_PI / 4), glm::vec3(1, 0, 0));
+  movement_matrix->setMatrix(matrix);
+  movement_matrix->addChild(camera_object);
+  //movement_matrix->addChild(new EgoMovement());
+  //movement_matrix->addChild(new BezierMovement(locations));
+
+  MatrixTransform* camera = new MatrixTransform();
+  camera->addChild(new Cube());
+  camera->addChild(new BezierMovement(locations));
+  camera->addChild(movement_matrix);
 
   // cube
 
@@ -275,7 +276,7 @@ int main(int argc, char *argv[])
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);   // open an OpenGL context with double buffering, RGB colors, and depth buffering
   glutInitWindowSize(Window::width, Window::height);      // set initial window size
   glutCreateWindow("OpenGL Cube");    	      // open window and set window title
-  glutFullScreen();
+  //glutFullScreen();
 
   if (glutGet(GLUT_WINDOW_COLORMAP_SIZE) != 0)
   {

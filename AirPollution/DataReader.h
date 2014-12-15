@@ -1,6 +1,13 @@
 #ifndef _DATA_READER_H_
 #define _DATA_READER_H_
 
+#include <glm/glm.hpp>
+
+typedef struct {
+  glm::dvec2 position;
+  float intensity[4];
+} Location;
+
 typedef struct {
   unsigned int line;
 

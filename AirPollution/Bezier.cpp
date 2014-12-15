@@ -57,3 +57,61 @@ glm::vec2 Bezier::tangent(std::vector<glm::vec2>& points, float t_curve)
 
   return b0 * p0 + b1 * p1 + b2 * p2 + b3 * p3;
 }
+
+glm::dvec2 Bezier::curve(std::vector<glm::dvec2>& points, float t_curve)
+{
+  size_t points_size = points.size();
+  int segments = (points_size - 1) / 3;
+
+  int segment = int(t_curve * segments);
+  if (segment < 0)
+    return points[0];
+  else if (segment >= segments)
+    return points[points_size - 1];
+
+  // select 4 points of segment
+  glm::dvec2 p0 = points[segment * 3 + 0];
+  glm::dvec2 p1 = points[segment * 3 + 1];
+  glm::dvec2 p2 = points[segment * 3 + 2];
+  glm::dvec2 p3 = points[segment * 3 + 3];
+
+  // find t_s for t in that segment
+  double t = (t_curve - segment * 1.0f / segments) * segments;
+
+  // use bernstein coefficients to calculate value
+  double b0 = -t*t*t + 3.0f*t*t - 3.0f*t + 1.0f;
+  double b1 = 3.0f*t*t*t - 6.0f*t*t + 3.0f*t;
+  double b2 = -3.0f*t*t*t + 3.0f*t*t;
+  double b3 = t*t*t;
+
+  return b0 * p0 + b1 * p1 + b2 * p2 + b3 * p3;
+}
+
+glm::dvec2 Bezier::tangent(std::vector<glm::dvec2>& points, float t_curve)
+{
+  size_t points_size = points.size();
+  int segments = (points_size - 1) / 3;
+
+  int segment = int(t_curve * segments);
+  if (segment < 0)
+    return points[0];
+  else if (segment >= segments)
+    return points[points_size - 1];
+
+  // select 4 points of segment
+  glm::dvec2 p0 = points[segment * 3 + 0];
+  glm::dvec2 p1 = points[segment * 3 + 1];
+  glm::dvec2 p2 = points[segment * 3 + 2];
+  glm::dvec2 p3 = points[segment * 3 + 3];
+
+  // find t_s for t in that segment
+  double t = (t_curve - segment * 1.0f / segments) * segments;
+
+  // use derived bernstein coefficients to calculate value
+  double b0 = -3.0f*t*t + 6.0f*t - 3.0f;
+  double b1 = 9.0f*t*t - 12.0f*t + 3.0f;
+  double b2 = -9.0f*t*t + 6.0f*t;
+  double b3 = 3.0f*t*t;
+
+  return b0 * p0 + b1 * p1 + b2 * p2 + b3 * p3;
+}
