@@ -1,6 +1,16 @@
-# Air Pollution
+# Air Pollution - Visualization of the Air Quality
 
-Visualization of the Air Pollution
+In summer 2014, the Public Health Department of National City (California) sent out teams to take air quality measurements throughout National City. This project tries to visualize the measurements by rendering smoke with varying density according to the air quality onto a map of National City.
+
+![Screenshot](https://github.com/FelixHoer/AirPollution/raw/master/screenshot.jpg)
+
+## Technical
+
+From a dataset of around 15.000 entries the locations where the teams stayed for a minute or longer are selected. At those locations a particle system is rendered. The particles are translucent quads, which have a smoke cloud texture on them. A level of detail method is used to adapt the number of particles based on the distance of the viewer.
+
+The map consists of 1024 tiles that were extracted from OpenStreetMap. Those tiles are arranged in a quad-tree to optimize view-frustum checks.
+
+The implementation makes heavy use of a scene-graph and view-frustum culling, to minimize the number of map-tiles and particle systems that have to be rendered.
 
 ## Requirements
 
